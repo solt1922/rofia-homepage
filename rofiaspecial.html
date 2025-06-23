@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>ロフィア共和国 国民専用ページ</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body>
+
+<h1>ロフィア共和国 国民限定ページ</h1>
+<div id="content"></div>
+<button id="logout-btn">ログアウト</button>
+
+<script>
+  const supabaseUrl = 'https://vavdzddueehsdodsmlzk.supabase.co';
+  const supabaseKey = 'あなたのanon public API key';
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+  const contentDiv = document.getElementById('content');
+  const logoutBtn = document.getElementById('logout-btn');
+
+  async function checkAuth() {
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+      // ログインしていない場合はログインページへリダイレクト（例）
+      window.location.href = 'login.html';
+      return;
+    }
+
+    // ログインしていればユーザー情報を表示
+    const user = session.user;
+    contentDiv.textContent = `ようこそ、${user.email}さん！こちらは国民限定のページです。`;
+  }
+
+  logoutBtn.addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    window.location.href = 'login.html';
+  });
+
+  // ページ読み込み時に認証チェック
+  checkAuth();
+</script>
+
+</body>
+</html>
