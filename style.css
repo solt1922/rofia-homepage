@@ -1,0 +1,51 @@
+/* 🏡 style.css（共通スタイル） */
+body {
+  font-family: "Yu Gothic", sans-serif;
+  margin: 0;
+  background-color: #f4f9fb;
+  color: #222;
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  background-color: #2d3e50;
+  width: 180px;
+  padding-top: 2rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  padding: 0.8rem 1rem;
+  font-weight: bold;
+}
+
+.sidebar a:hover {
+  background-color: #3f5873;
+}
+
+main {
+  margin-left: 180px;
+  padding: 2rem;
+  max-width: 900px;
+  width: 100%;
+}
+
+header, footer {
+  margin-left: 180px;
+  width: calc(100% - 180px);
+  background-color: #dcdcdc;
+  color: #555;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+}
