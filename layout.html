@@ -1,55 +1,12 @@
-
-<style>
-  body {
-  font-family: "Yu Gothic", sans-serif;
-  margin: 0;
-  background-color: #f4f9fb;
-  color: #222;
-  display: flex;        /* 横並びに */
-  min-height: 100vh;    /* 画面高さ確保 */
-}
-
-/* サイドバー */
-.sidebar {
-  background-color: #2d3e50;
-  width: 180px;
-  padding-top: 2rem;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  position: fixed;  /* 常に表示 */
-  height: 100vh;
-  top: 0;
-  left: 0;
-  overflow-y: auto;
-}
-
-.sidebar a {
-  color: white;
-  text-decoration: none;
-  padding: 0.8rem 1rem;
-  font-weight: bold;
-}
-
-.sidebar a:hover {
-  background-color: #3f5873;
-}
-
-/* メイン部分 */
-main {
-  margin-left: 180px;  /* サイドバー分の余白 */
-  padding: 2rem;
-  max-width: 900px;
-  width: 100%;
-}
-
-/* header, footer は横幅100%に */
-header, footer {
-  margin-left: 180px;
-  width: calc(100% - 180px);
-}
-
-</style>
+<!-- layout.html（読み込まれないが参考テンプレ） -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ページタイトル</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
 <body>
   <div class="sidebar">
     <a href="index.html">ホーム</a>
@@ -70,7 +27,9 @@ header, footer {
     <!-- ページ内容 -->
   </main>
 
-  <footer>
-    <p>&copy; 2025 ロフィア共和国 Rofia Republic</p>
-  </footer>
+<footer>
+  <p>&copy; 2025 ロフィア共和国 Rofia Republic</p>
+</footer>
+
 </body>
+</html>
