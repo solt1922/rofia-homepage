@@ -1,16 +1,104 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>ロフィア連邦共和国 - 国旗・国章紹介</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ロフィア共和国</title>
+<style>
+  body {
+    font-family: "Yu Gothic", sans-serif;
+    margin: 0;
+    background-color: #f4f9fb;
+    color: #222;
+    transition: margin-left 0.3s;
+  }
+
+  /* メニューボタン */
+  #menu-btn {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background-color: #2d3e50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    z-index: 1100;
+    font-weight: bold;
+  }
+
+  /* サイドバー */
+  .sidebar {
+    background-color: #2d3e50;
+    width: 180px;
+    padding-top: 2rem;
+    box-sizing: border-box;
+    position: fixed;
+    height: 100vh;
+    top: 0;
+    left: -180px; /* 初期は画面外へ隠す */
+    overflow-y: auto;
+    transition: left 0.3s;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar.show {
+    left: 0; /* 表示状態 */
+  }
+
+  .sidebar a {
+    color: white;
+    text-decoration: none;
+    padding: 0.8rem 1rem;
+    font-weight: bold;
+  }
+
+  .sidebar a:hover {
+    background-color: #3f5873;
+  }
+
+  /* メインコンテンツ */
+  main {
+    padding: 2rem;
+    max-width: 900px;
+    margin: 60px auto 20px auto; /* メニューボタンの分だけ上に余白 */
+  }
+
+  header, footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    background-color: #2d3e50;
+    color: white;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+</style>
 </head>
 <body>
-  <header>
-    <h1>国旗・国章紹介</h1>
-  </header>
 
-  <main>
+<button id="menu-btn">メニュー</button>
+
+<nav class="sidebar" id="sidebar">
+<nav class="sidebar" id="sidebar">
+  <a href="index.html">ホーム</a>
+  <a href="flag.html">旗</a>
+  <a href="">準備中</a>
+  <a href="">準備中</a>
+  <a href="">準備中</a>
+  <a href="">準備中</a>
+  <a href="準備中">準備中</a>
+</nav>
+</nav>
+
+<header>
+  <h1>ロフィア共和国</h1>
+  <p>— 静けさと文化が息づく、新しいミニ国家 —</p>
+</header>
+
+<main>
     <h2>国旗</h2>
     <p>ロフィアの国旗は　雪の白、勇気の赤、幸せの青から構成されております<br>
       詳細は<br>
@@ -22,10 +110,20 @@
 
     <h2>国章</h2>
     <p>ロフィアの国章は、...現在準備中です</p>
-  </main>
+</main>
+<footer>
+  <p>&copy; 2025 ロフィア共和国 Rofia Republic</p>
+</footer>
 
-  <footer>
-    <p>&copy; 2025 ロフィア連邦共和国</p>
-  </footer>
+<script>
+  const menuBtn = document.getElementById('menu-btn');
+  const sidebar = document.getElementById('sidebar');
+
+  menuBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('show');
+  });
+</script>
+
 </body>
 </html>
+
