@@ -2,49 +2,93 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>ロフィア共和国 国民登録フォーム</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ロフィア共和国 国民登録</title>
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
-    input, select { display: block; margin-bottom: 1rem; padding: 0.5rem; width: 300px; }
-    label { margin-bottom: 0.3rem; }
-    #message { margin-top: 1rem; font-weight: bold; }
+    form {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, select {
+      display: block;
+      width: 100%;
+      padding: 0.6rem;
+      margin-bottom: 1rem;
+    }
+    label {
+      font-weight: bold;
+    }
+    button {
+      background: #2d3e50;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      cursor: pointer;
+    }
+    #message {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
 
-<h1>ロフィア共和国 国民登録フォーム</h1>
+  <div class="sidebar">
+    <a href="index.html">ホーム</a>
+    <a href="citizenship.html">国民登録</a>
+    <a href="flag.html">国旗紹介</a>
+    <a href="rofiaspecial.html">特別ページ</a>
+  </div>
 
-<form id="signup-form">
-  <label for="username">ユーザー名（必須）</label>
-  <input type="text" id="username" required />
+  <header>
+    <h1>ロフィア共和国</h1>
+    <p>— 静けさと文化が息づく、新しいミニ国家 —</p>
+  </header>
 
-  <label for="email">メールアドレス（必須）</label>
-  <input type="email" id="email" required />
+  <main>
+    <h2>国民登録フォーム</h2>
 
-  <label for="password">パスワード（必須）</label>
-  <input type="password" id="password" required />
+    <form id="signup-form">
+      <label for="username">ユーザー名（必須）</label>
+      <input type="text" id="username" required />
 
-  <label for="confirm-password">パスワード確認（必須）</label>
-  <input type="password" id="confirm-password" required />
+      <label for="email">メールアドレス（必須）</label>
+      <input type="email" id="email" required />
 
-  <label for="gender">性別（必須）</label>
-  <select id="gender" required>
-    <option value="" disabled selected>選択してください</option>
-    <option value="male">男性</option>
-    <option value="female">女性</option>
-    <option value="other">その他</option>
-  </select>
+      <label for="password">パスワード（必須）</label>
+      <input type="password" id="password" required />
 
-  <label><input type="checkbox" id="terms" required /> 利用規約に同意します（必須）</label>
+      <label for="confirm-password">パスワード確認（必須）</label>
+      <input type="password" id="confirm-password" required />
 
-  <button type="submit">登録する</button>
-</form>
+      <label for="gender">性別（必須）</label>
+      <select id="gender" required>
+        <option value="" disabled selected>選択してください</option>
+        <option value="male">男性</option>
+        <option value="female">女性</option>
+        <option value="other">その他</option>
+      </select>
 
-<div id="message"></div>
+      <label><input type="checkbox" id="terms" required /> 利用規約に同意します</label>
+
+      <button type="submit">登録する</button>
+      <div id="message"></div>
+    </form>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 ロフィア共和国 Rofia Republic</p>
+  </footer>
 
 <script>
   const supabaseUrl = 'https://vavdzddueehsdodsmlzk.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhdmR6ZGR1ZWVoc2RvZHNtbHprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2NzMxOTcsImV4cCI6MjA2NjI0OTE5N30.z5GBw8Sy1i6WoIfOFUJEkPv7xYGzT0FNFakjwj_Dun0';
+  const supabaseKey = 'あなたのAPIキー';
   const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
   const messageDiv = document.getElementById('message');
@@ -73,7 +117,6 @@
       return;
     }
 
-    // サインアップ処理
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) {
       messageDiv.textContent = '登録エラー: ' + error.message;
@@ -81,7 +124,6 @@
       return;
     }
 
-    // プロフィール情報登録
     const { error: profileError } = await supabase
       .from('profiles')
       .insert([{ id: data.user.id, username, gender }]);
@@ -92,11 +134,10 @@
       return;
     }
 
-    messageDiv.textContent = '登録成功！メールの確認をしてください。';
+    messageDiv.textContent = '登録成功！メールを確認してください。';
     messageDiv.style.color = 'green';
   });
 </script>
 
 </body>
 </html>
-
