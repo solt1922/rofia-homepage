@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ロフィア共和国</title>
+<style>
+  body {
+    font-family: "Yu Gothic", sans-serif;
+    margin: 0;
+    background-color: #f4f9fb;
+    color: #222;
+    transition: margin-left 0.3s;
+  }
+
+  /* メニューボタン */
+  #menu-btn {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background-color: #2d3e50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    z-index: 1100;
+    font-weight: bold;
+  }
+
+  /* サイドバー */
+  .sidebar {
+    background-color: #2d3e50;
+    width: 180px;
+    padding-top: 2rem;
+    box-sizing: border-box;
+    position: fixed;
+    height: 100vh;
+    top: 0;
+    left: -180px; /* 初期は画面外へ隠す */
+    overflow-y: auto;
+    transition: left 0.3s;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar.show {
+    left: 0; /* 表示状態 */
+  }
+
+  .sidebar a {
+    color: white;
+    text-decoration: none;
+    padding: 0.8rem 1rem;
+    font-weight: bold;
+  }
+
+  .sidebar a:hover {
+    background-color: #3f5873;
+  }
+
+  /* メインコンテンツ */
+  main {
+    padding: 2rem;
+    max-width: 900px;
+    margin: 60px auto 20px auto; /* メニューボタンの分だけ上に余白 */
+  }
+
+  header, footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    background-color: #2d3e50;
+    color: white;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+</style>
+</head>
+<body>
+
+<button id="menu-btn">メニュー</button>
+
+<nav class="sidebar" id="sidebar">
+  <a href="index.html">ホーム</a>
+  <a href="flag.html">旗</a>
+  <a href="">準備中</a>
+  <a href="">準備中</a>
+  <a href="">準備中</a>
+  <a href="">準備中</a>
+  <a href="準備中">準備中</a>
+</nav>
+
+<header>
+  <h1>ロフィア共和国</h1>
+  <p>— 静けさと文化が息づく、新しいミニ国家 —</p>
+</header>
+<main>
+  <section>
+    <h2>第1条：国旗および国章の尊重</h2>
+    <p>
+      ロフィア共和国の象徴である国旗・国章を粗末に扱うことを禁ずる。<br>
+      これに反する行為をした者は、国家より厳重な警告または国民資格の一時停止を受けるものとする。
+    </p>
+  </section>
+
+  <section>
+    <h2>第2条：侮辱・敵対行為の禁止</h2>
+    <p>
+      ロフィア共和国またはその国民を公然と侮辱、または敵対するような言動を禁ずる。<br>
+      これに該当する者には国民資格の審査が行われ、必要に応じて制限措置が適用される。
+    </p>
+  </section>
+
+  <section>
+    <h2>第3条：国民の責任と誠実義務</h2>
+    <p>
+      国民は自らの言動に責任を持ち、ロフィア共和国の平和と成長に寄与するよう努める。<br>
+      登録情報の虚偽申告は禁止とし、発覚した場合は修正命令または資格の停止を受ける。
+    </p>
+  </section>
+
+  <section>
+    <h2>第4条：プライバシーの尊重と情報の透明性</h2>
+    <p>
+      個人のプライバシーを尊重し、無断での開示を禁止する。<br>
+      一方、公共性を持つ情報は適切に共有され、国家運営の透明性を保つものとする。
+    </p>
+  </section>
+
+  <section>
+    <h2>第5条：ロフィアの人格尊重</h2>
+    <p>
+      ロフィア共和国（国家そのもの）を人格を持つ存在として尊重すること。<br>
+      国を愛し、国との対話・共生を大切にすることを推奨する。
+    </p>
+  </section>
+
+  <section>
+    <h2>第6条：多様性と文化的共存</h2>
+    <p>
+      国民は互いの文化・言語・価値観を尊重し、いかなる差別も行ってはならない。<br>
+      多様性のある社会を育てる努力をすること。
+    </p>
+  </section>
+
+  <section>
+    <h2>第7条：自然と電子の共存</h2>
+    <p>
+      物理的国土（庭の花壇など）および電子国土（ウェブ空間）を同等に大切にすること。<br>
+      環境に対する意識を持ち、国土を荒らさない。
+    </p>
+  </section>
+
+  <section>
+    <h2>第8条：教育と国民意識の推奨</h2>
+    <p>
+      ロフィアの理念や歴史に関する学習を国民に推奨する。<br>
+      国を知り、共に築いていく意思を持つことが望ましい。
+    </p>
+  </section>
+
+  <section>
+    <h2>第9条：問題解決と対話の義務</h2>
+    <p>
+      トラブルが発生した際には、互いに敬意を持って冷静に話し合い、暴力や誹謗中傷に頼らないこと。<br>
+      これに違反した場合、審議の上で国民資格の一時停止または除籍が行われる。
+    </p>
+  </section>
+
+  <section>
+    <h2>補則：罰則について</h2>
+    <p>
+      本法に違反した場合の制裁は金銭的な罰ではなく、<br>
+      <strong>警告・資格制限・公式謝罪要請などの非金銭的措置</strong>をもって執行される。
+    </p>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2025 ロフィア共和国 Rofia Republic</p>
+</footer>
+
+<script>
+  const menuBtn = document.getElementById('menu-btn');
+  const sidebar = document.getElementById('sidebar');
+  menuBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('show');
+  });
+</script>
+
+</body>
+</html>
