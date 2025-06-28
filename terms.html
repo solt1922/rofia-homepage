@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>利用規約 - ロフィア共和国</title>
+  <style>
+    body {
+      font-family: "Yu Gothic", sans-serif;
+      margin: 0;
+      background-color: #f4f9fb;
+      color: #222;
+    }
+
+    header, footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      background-color: #2d3e50;
+      color: white;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    #menu-btn {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background-color: #2d3e50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      z-index: 1100;
+      font-weight: bold;
+    }
+
+    .sidebar {
+      background-color: #2d3e50;
+      width: 180px;
+      padding-top: 2rem;
+      box-sizing: border-box;
+      position: fixed;
+      height: 100vh;
+      top: 0;
+      left: -180px;
+      overflow-y: auto;
+      transition: left 0.3s;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar.show {
+      left: 0;
+    }
+
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 0.8rem 1rem;
+      font-weight: bold;
+    }
+
+    .sidebar a:hover {
+      background-color: #3f5873;
+    }
+
+    main {
+      padding: 2rem;
+      max-width: 900px;
+      margin: 60px auto 20px auto;
+    }
+
+    section {
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      color: #2d3e50;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+<button id="menu-btn">メニュー</button>
+
+<nav class="sidebar" id="sidebar">
+  <a href="index.html">ホーム</a>
+  <a href="citizenship.html">国民登録</a>
+  <a href="login.html">ログイン</a>
+  <a href="laws.html">法律</a>
+  <a href="terms.html">利用規約</a>
+</nav>
+
+<header>
+  <h1>ロフィア共和国</h1>
+  <p>— 利用規約ページ —</p>
+</header>
+
+<main>
+  <section>
+    <h2>第1条（総則）</h2>
+    <p>
+      本利用規約は、ロフィア共和国（以下「本国」）の提供する各種サービスに関し、利用者が遵守すべき基本事項を定めるものです。
+    </p>
+  </section>
+
+  <section>
+    <h2>第2条（利用者の定義）</h2>
+    <p>
+      本国が提供するウェブサイトや機能を閲覧・登録・利用した者は、国民または準国民とみなし、本規約に同意したものとします。
+    </p>
+  </section>
+
+  <section>
+    <h2>第3条（禁止行為）</h2>
+    <ul>
+      <li>虚偽情報の登録</li>
+      <li>他の利用者・国家への中傷、誹謗、侮辱行為</li>
+      <li>国家の運営を妨害する行為</li>
+      <li>自作自演・成りすまし・なりかわりの行為</li>
+      <li>その他、公序良俗に反する行為</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>第4条（利用資格の制限）</h2>
+    <p>
+      本国は、利用規約違反または不適切と判断された者に対して、警告、資格停止、除籍などの措置を取ることがあります。
+    </p>
+  </section>
+
+  <section>
+    <h2>第5条（知的財産）</h2>
+    <p>
+      ロフィア共和国のロゴ・名称・キャラクター・国旗・国章等は本国に帰属します。無断での商用利用・改変・再配布は禁止です。
+    </p>
+  </section>
+
+  <section>
+    <h2>第6条（免責事項）</h2>
+    <p>
+      国家の特性上、予告なくサービスの内容変更・停止を行う場合があります。本国はそれによる損害責任を負いません。
+    </p>
+  </section>
+
+  <section>
+    <h2>第7条（規約の改定）</h2>
+    <p>
+      本国は必要に応じて本規約を変更することがあります。変更後も本サイトの利用を継続することで、改定に同意したものとします。
+    </p>
+  </section>
+
+  <section>
+    <h2>附則</h2>
+    <p>
+      本規約は2025年6月27日より施行されます。
+    </p>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2025 ロフィア共和国 Rofia Republic</p>
+</footer>
+
+<script>
+  const menuBtn = document.getElementById('menu-btn');
+  const sidebar = document.getElementById('sidebar');
+  menuBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('show');
+  });
+</script>
+
+</body>
+</html>
