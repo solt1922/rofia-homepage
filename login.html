@@ -3,35 +3,102 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ロフィア共和国 国民登録</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>ロフィア共和国- ログイン </title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
+    body {
+      font-family: "Yu Gothic", sans-serif;
+      margin: 0;
+      background-color: #f4f9fb;
+      color: #222;
+    }
+
+    header, footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      background-color: #2d3e50;
+      color: white;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    main {
+      padding: 2rem;
+      max-width: 900px;
+      margin: 60px auto 20px auto;
+    }
+
+    #menu-btn {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background-color: #2d3e50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      z-index: 1100;
+      font-weight: bold;
+    }
+
+    .sidebar {
+      background-color: #2d3e50;
+      width: 180px;
+      padding-top: 2rem;
+      box-sizing: border-box;
+      position: fixed;
+      height: 100vh;
+      top: 0;
+      left: -180px;
+      overflow-y: auto;
+      transition: left 0.3s;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar.show {
+      left: 0;
+    }
+
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 0.8rem 1rem;
+      font-weight: bold;
+    }
+
+    .sidebar a:hover {
+      background-color: #3f5873;
+    }
+
     form {
-      max-width: 500px;
+      max-width: 400px;
       margin: auto;
-      background: #fff;
+      background: white;
       padding: 2rem;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    input, select {
-      display: block;
+
+    input {
       width: 100%;
       padding: 0.6rem;
       margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
-    label {
-      font-weight: bold;
-    }
+
     button {
       background: #2d3e50;
       color: white;
       border: none;
       padding: 0.7rem 1.5rem;
+      border-radius: 4px;
       cursor: pointer;
     }
-    #message {
+
+    #login-message {
       margin-top: 1rem;
       font-weight: bold;
     }
@@ -39,103 +106,69 @@
 </head>
 <body>
 
-  <div class="sidebar">
-    <a href="index.html">ホーム</a>
-    <a href="citizenship.html">国民登録</a>
-    <a href="flag.html">国旗紹介</a>
-    <a href="rofiaspecial.html">特別ページ</a>
-  </div>
+<button id="menu-btn">メニュー</button>
 
-  <header>
-    <h1>ロフィア共和国</h1>
-    <p>— 静けさと文化が息づく、新しいミニ国家 —</p>
-  </header>
+<nav class="sidebar" id="sidebar">
+  <a href="index.html">ホーム</a>
+  <a href="citizenship.html">国民登録</a>
+  <a href="login.html">ログイン</a>
+  <a href="laws.html">法律</a>
+</nav>
 
-  <main>
-    <h2>国民登録フォーム</h2>
+<header>
+  <h1>ロフィア共和国</h1>
+  <p>— 国民ログインページ —</p>
+</header>
 
-    <form id="signup-form">
-      <label for="username">ユーザー名（必須）</label>
-      <input type="text" id="username" required />
+<main>
+  <h2>ログインフォーム</h2>
+  <form id="login-form">
+    <label for="email">メールアドレス</label>
+    <input type="email" id="email" required>
 
-      <label for="email">メールアドレス（必須）</label>
-      <input type="email" id="email" required />
+    <label for="password">パスワード</label>
+    <input type="password" id="password" required>
 
-      <label for="password">パスワード（必須）</label>
-      <input type="password" id="password" required />
+    <button type="submit">ログイン</button>
+    <div id="login-message"></div>
+  </form>
+</main>
 
-      <label for="confirm-password">パスワード確認（必須）</label>
-      <input type="password" id="confirm-password" required />
-
-      <label for="gender">性別（必須）</label>
-      <select id="gender" required>
-        <option value="" disabled selected>選択してください</option>
-        <option value="male">男性</option>
-        <option value="female">女性</option>
-        <option value="other">その他</option>
-      </select>
-
-      <label><input type="checkbox" id="terms" required /> 利用規約に同意します</label>
-
-      <button type="submit">登録する</button>
-      <div id="message"></div>
-    </form>
-  </main>
-
-  <footer>
-    <p>&copy; 2025 ロフィア共和国 Rofia Republic</p>
-  </footer>
+<footer>
+  <p>&copy; 2025 ロフィア共和国 Rofia Republic</p>
+</footer>
 
 <script>
+  const menuBtn = document.getElementById('menu-btn');
+  const sidebar = document.getElementById('sidebar');
+  menuBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('show');
+  });
+
   const supabaseUrl = 'https://vavdzddueehsdodsmlzk.supabase.co';
-  const supabaseKey = 'あなたのAPIキー';
+  const supabaseKey = 'あなたのAPIキー'; // 環境に応じて管理
   const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-  const messageDiv = document.getElementById('message');
+  const loginForm = document.getElementById('login-form');
+  const messageDiv = document.getElementById('login-message');
 
-  document.getElementById('signup-form').addEventListener('submit', async (e) => {
+  loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-
-    const username = document.getElementById('username').value.trim();
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
-    const gender = document.getElementById('gender').value;
-    const termsChecked = document.getElementById('terms').checked;
 
-    messageDiv.textContent = '';
-    messageDiv.style.color = 'black';
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (password !== confirmPassword) {
-      messageDiv.textContent = 'パスワードが一致しません。';
-      messageDiv.style.color = 'red';
-      return;
-    }
-    if (!termsChecked) {
-      messageDiv.textContent = '利用規約に同意してください。';
-      messageDiv.style.color = 'red';
-      return;
-    }
-
-    const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) {
-      messageDiv.textContent = '登録エラー: ' + error.message;
+      messageDiv.textContent = 'ログイン失敗: ' + error.message;
       messageDiv.style.color = 'red';
-      return;
+    } else {
+      messageDiv.textContent = 'ログイン成功！';
+      messageDiv.style.color = 'green';
+
+      // 任意: マイページなどにリダイレクト
+      // window.location.href = "mypage.html";
     }
-
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .insert([{ id: data.user.id, username, gender }]);
-
-    if (profileError) {
-      messageDiv.textContent = 'プロフィール保存エラー: ' + profileError.message;
-      messageDiv.style.color = 'red';
-      return;
-    }
-
-    messageDiv.textContent = '登録成功！メールを確認してください。';
-    messageDiv.style.color = 'green';
   });
 </script>
 
