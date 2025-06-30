@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>二次創作ガイドライン - ロフィア共和国</title>
+  <style>
+    body {
+      font-family: "Yu Gothic", sans-serif;
+      margin: 0;
+      background-color: #f4f9fb;
+      color: #222;
+      transition: margin-left 0.3s;
+    }
+    #menu-btn {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background-color: #2d3e50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      z-index: 1100;
+      font-weight: bold;
+    }
+    .sidebar {
+      background-color: #2d3e50;
+      width: 180px;
+      padding-top: 2rem;
+      box-sizing: border-box;
+      position: fixed;
+      height: 100vh;
+      top: 0;
+      left: -180px;
+      overflow-y: auto;
+      transition: left 0.3s;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar.show {
+      left: 0;
+    }
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 0.8rem 1rem;
+      font-weight: bold;
+    }
+    .sidebar a:hover {
+      background-color: #3f5873;
+    }
+    main {
+      padding: 2rem;
+      max-width: 900px;
+      margin: 60px auto 20px auto;
+    }
+    header, footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      background-color: #2d3e50;
+      color: white;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    ul {
+      padding-left: 1.2rem;
+    }
+    li {
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+<button id="menu-btn">メニュー</button>
+
+<nav class="sidebar" id="sidebar">
+  <a href="index.html">ホーム</a>
+  <a href="flag.html">国旗</a>
+  <a href="laws.html">法律</a>
+  <a href="fan_guideline.html">二次創作ガイドライン</a>
+  <a href="">準備中</a>
+</nav>
+
+<header>
+  <h1>ロフィア共和国</h1>
+  <p>— 静けさと文化が息づく、新しいミニ国家 —</p>
+</header>
+
+<main>
+  <h2>🌸 二次創作ガイドライン</h2>
+
+  <p>ロフィア共和国の世界をもっと楽しんでもらうため、公式素材やキャラクターを使った<strong>二次創作</strong>を歓迎します。</p>
+
+  <h3>🎨 許可される内容</h3>
+  <ul>
+    <li>個人の趣味・ファン活動でのイラスト・漫画・小説・コスプレなど</li>
+    <li>SNS・展示会などでの非営利公開</li>
+    <li>キャラクターの着せ替えやif設定など（世界観の尊重を前提）</li>
+  </ul>
+
+  <h3>❌ 禁止・注意事項</h3>
+  <ul>
+    <li>営利目的の販売・商用利用（事前相談が必要）</li>
+    <li>暴力・過激表現・差別を含む作品</li>
+    <li>政治・宗教・思想の宣伝を目的とした使用</li>
+    <li>キャラを侮辱・嘲笑するような表現</li>
+  </ul>
+
+  <h3>📝 推奨事項</h3>
+  <ul>
+    <li>「#ロフィア共和国」などのハッシュタグを使用</li>
+    <li>「ロフィア共和国公式」や公式URLの明記</li>
+    <li>ロフィアの人格・世界観を大切にすること</li>
+  </ul>
+
+  <h3>📬 お問い合わせ</h3>
+  <p>グッズ制作・イベント出展・商用利用などは、<strong>公式連絡フォーム</strong>またはSNSでご相談ください。</p>
+
+  <p>みんなでロフィアの物語を広げよう！</p>
+</main>
+
+<footer>
+  <p>&copy; 2025 ロフィア共和国 Rofia Republic</p>
+</footer>
+
+<script>
+  const menuBtn = document.getElementById('menu-btn');
+  const sidebar = document.getElementById('sidebar');
+  menuBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('show');
+  });
+</script>
+
+</body>
+</html>
