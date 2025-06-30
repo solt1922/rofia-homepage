@@ -1,17 +1,122 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <title>ロフィア共和国 国民専用ページ</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ロフィア共和国</title>
+<style>
+  body {
+    font-family: "Yu Gothic", sans-serif;
+    margin: 0;
+    background-color: #f4f9fb;
+    color: #222;
+    transition: margin-left 0.3s;
+  }
+
+  /* メニューボタン */
+  #menu-btn {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background-color: #2d3e50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    z-index: 1100;
+    font-weight: bold;
+  }
+
+  /* サイドバー */
+  .sidebar {
+    background-color: #2d3e50;
+    width: 180px;
+    padding-top: 2rem;
+    box-sizing: border-box;
+    position: fixed;
+    height: 100vh;
+    top: 0;
+    left: -180px; /* 初期は画面外へ隠す */
+    overflow-y: auto;
+    transition: left 0.3s;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar.show {
+    left: 0; /* 表示状態 */
+  }
+
+  .sidebar a {
+    color: white;
+    text-decoration: none;
+    padding: 0.8rem 1rem;
+    font-weight: bold;
+  }
+
+  .sidebar a:hover {
+    background-color: #3f5873;
+  }
+
+  /* メインコンテンツ */
+  main {
+    padding: 2rem;
+    max-width: 900px;
+    margin: 60px auto 20px auto; /* メニューボタンの分だけ上に余白 */
+  }
+
+  header, footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    background-color: #2d3e50;
+    color: white;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+</style>
 </head>
 <body>
 
+<button id="menu-btn">メニュー</button>
+
+<nav class="sidebar" id="sidebar">
+  <a href="index.html">ホーム</a>
+  <a href="flag.html">旗</a>
+  <a href="laws.html">法律</a>
+  <a href="">準備中</a>
+  <a href="">準備中</a>
+  <a href="">準備中</a>
+  <a href="fan_guideline.html">二次創作ガイドライン</a>
+</nav>
+
+<header>
+<body>
+
 <h1>ロフィア共和国 国民限定ページ</h1>
-<div id="content"></div>
+
+<section id="profile-card">
+  <h2>📛 国民証</h2>
+  <p><strong>ユーザー名：</strong><span id="display-username">読み込み中…</span></p>
+  <p><strong>性別：</strong><span id="display-gender">読み込み中…</span></p>
+  <p><strong>メール：</strong><span id="display-email">読み込み中…</span></p>
+</section>
+
+<section id="rofia-message">
+  <h2>📮 ロフィアからのメッセージ</h2>
+  <p id="random-message">...</p>
+</section>
+
+<section id="login-history">
+  <h2>📘 あなたのログイン履歴</h2>
+  <p>前回ログイン：<span id="last-login">確認中…</span></p>
+</section>
+
 <button id="logout-btn">ログアウト</button>
 
 <script>
+  // Supabase設定
   const supabaseUrl = 'https://vavdzddueehsdodsmlzk.supabase.co';
   const supabaseKey = 'あなたのanon public API key';
   const supabase = supabase.createClient(supabaseUrl, supabaseKey);
@@ -19,18 +124,45 @@
   const contentDiv = document.getElementById('content');
   const logoutBtn = document.getElementById('logout-btn');
 
+  // ランダムメッセージ
+  const rofiaMessages = [
+    "こんにちはっ！今日もがんばろうね！",
+    "花壇に新しい芽が出たかも…！",
+    "おなかすいたー、ホットミルク飲みたいな〜。",
+    "ぼくの国、少しずつ育ってる気がするよ！",
+    "きみが来てくれてうれしいよ！"
+  ];
+  document.getElementById('random-message').textContent =
+    rofiaMessages[Math.floor(Math.random() * rofiaMessages.length)];
+
+  // ログイン履歴（ローカルストレージ）
+  const lastLogin = localStorage.getItem('lastLogin');
+  document.getElementById('last-login').textContent = lastLogin
+    ? new Date(lastLogin).toLocaleString()
+    : "初めてのログインかもしれません！";
+  localStorage.setItem('lastLogin', new Date().toISOString());
+
+  // ユーザー認証とプロフィール表示
   async function checkAuth() {
     const { data: { session } } = await supabase.auth.getSession();
-
     if (!session) {
-      // ログインしていない場合はログインページへリダイレクト（例）
       window.location.href = 'login.html';
       return;
     }
 
-    // ログインしていればユーザー情報を表示
     const user = session.user;
-    contentDiv.textContent = `ようこそ、${user.email}さん！こちらは国民限定のページです。`;
+    document.getElementById('display-email').textContent = user.email;
+
+    const { data: profileData, error } = await supabase
+      .from('profiles')
+      .select('username, gender')
+      .eq('id', user.id)
+      .single();
+
+    if (profileData) {
+      document.getElementById('display-username').textContent = profileData.username;
+      document.getElementById('display-gender').textContent = profileData.gender;
+    }
   }
 
   logoutBtn.addEventListener('click', async () => {
@@ -38,7 +170,6 @@
     window.location.href = 'login.html';
   });
 
-  // ページ読み込み時に認証チェック
   checkAuth();
 </script>
 
