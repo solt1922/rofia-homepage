@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ロフィアとおはなし</title>
+  <style>
+    body {
+      font-family: "Yu Gothic", sans-serif;
+      background-color: #f4f9fb;
+      margin: 0;
+      padding: 2rem;
+      color: #222;
+    }
+
+    #chat-box {
+      background: white;
+      border-radius: 10px;
+      padding: 1rem;
+      height: 400px;
+      overflow-y: auto;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+      margin-bottom: 1rem;
+    }
+
+    .message-container {
+      display: flex;
+      margin: 0.5rem 0;
+      align-items: flex-start;
+    }
+
+    .message-container.user {
+      flex-direction: row-reverse;
+    }
+
+    .message-container img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin: 0 0.5rem;
+    }
+
+    .bubble {
+      padding: 0.7rem 1rem;
+      border-radius: 10px;
+      max-width: 70%;
+      word-wrap: break-word;
+    }
+
+    .user .bubble {
+      background-color: #dbefff;
+      text-align: right;
+    }
+
+    .rofia .bubble {
+      background-color: #e6f3e6;
+      text-align: left;
+    }
+
+    input {
+      width: 80%;
+      padding: 0.5rem;
+      margin-right: 0.5rem;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      background-color: #2d3e50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+  </style>
+</head>
+<body>
+
+<h1>ロフィアとおはなししよう！</h1>
+
+<div id="chat-box"></div>
+
+<input type="text" id="user-input" placeholder="ロフィアに話しかけてみて…" />
+<button onclick="sendMessage()">送信</button>
+
+<script>
+  const chatBox = document.getElementById('chat-box');
+  const userInput = document.getElementById('user-input');
+
+  const responses = [
+    "うんうん、それっておもしろそう！",
+    "わあ〜！それってすごいね！",
+    "うーん、ぼくにはちょっとむずかしいけど、がんばって考えてみる！",
+    "えへへ、そんなこと言われたらうれしくなっちゃう！",
+    "ねえねえ、それってどういう意味？もっと教えて！"
+  ];
+
+  function appendMessage(text, sender) {
+    const container = document.createElement('div');
+    container.className = `message-container ${sender}`;
+
+    const icon = document.createElement('img');
+    icon.src = sender === 'rofia' 
+      ? 'rofia_icon.png' // ← ロフィアのアイコン画像（用意しておいてね）
+      : 'user_icon.png'; // ← ユーザーの仮アイコン
+
+    const bubble = document.createElement('div');
+    bubble.className = `bubble`;
+    bubble.textContent = text;
+
+    container.appendChild(icon);
+    container.appendChild(bubble);
+    chatBox.appendChild(container);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function sendMessage() {
+    const text = userInput.value.trim();
+    if (text === '') return;
+    appendMessage(text, 'user');
+    userInput.value = '';
+
+    // ロフィアの返答（擬似ランダム）
+    setTimeout(() => {
+      const reply = responses[Math.floor(Math.random() * responses.length)];
+      appendMessage(reply, 'rofia');
+    }, 600);
+  }
+</script>
+
+</body>
+</html>
