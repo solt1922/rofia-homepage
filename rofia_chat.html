@@ -3,37 +3,47 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ロフィアとおはなし</title>
+  <title>ロフィアとお話しよう！</title>
   <style>
     body {
       font-family: "Yu Gothic", sans-serif;
-      background-color: #f4f9fb;
       margin: 0;
-      padding: 2rem;
-      color: #222;
+      background: #eef3f8;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
     }
 
-    #chat-box {
-      background: white;
-      border-radius: 10px;
+    header {
+      background: #2d3e50;
+      color: white;
       padding: 1rem;
-      height: 400px;
-      overflow-y: auto;
-      box-shadow: 0 0 6px rgba(0,0,0,0.1);
-      margin-bottom: 1rem;
+      text-align: center;
     }
 
-    .message-container {
+    .chat-container {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message {
       display: flex;
       margin: 0.5rem 0;
-      align-items: flex-start;
+      align-items: flex-end;
     }
 
-    .message-container.user {
+    .message.rofia {
+      flex-direction: row;
+    }
+
+    .message.user {
       flex-direction: row-reverse;
     }
 
-    .message-container img {
+    .icon {
       width: 40px;
       height: 40px;
       border-radius: 50%;
@@ -41,91 +51,137 @@
     }
 
     .bubble {
+      background: white;
       padding: 0.7rem 1rem;
-      border-radius: 10px;
-      max-width: 70%;
-      word-wrap: break-word;
-    }
-
-    .user .bubble {
-      background-color: #dbefff;
-      text-align: right;
+      border-radius: 1rem;
+      max-width: 60%;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      word-break: break-word;
     }
 
     .rofia .bubble {
-      background-color: #e6f3e6;
-      text-align: left;
+      background: #dbefff;
     }
 
-    input {
-      width: 80%;
-      padding: 0.5rem;
-      margin-right: 0.5rem;
+    footer {
+      display: flex;
+      padding: 0.8rem;
+      background: #fff;
+      border-top: 1px solid #ccc;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 0.6rem;
+      border: 1px solid #aaa;
+      border-radius: 0.5rem;
     }
 
     button {
-      padding: 0.5rem 1rem;
-      background-color: #2d3e50;
+      margin-left: 0.5rem;
+      padding: 0.6rem 1rem;
+      background: #2d3e50;
       color: white;
       border: none;
+      border-radius: 0.5rem;
       cursor: pointer;
     }
-
   </style>
 </head>
 <body>
 
-<h1>ロフィアとおはなししよう！</h1>
+  <header>
+    <h1>ロフィア共和国とお話しよう！</h1>
+  </header>
 
-<div id="chat-box"></div>
+  <div class="chat-container" id="chat"></div>
 
-<input type="text" id="user-input" placeholder="ロフィアに話しかけてみて…" />
-<button onclick="sendMessage()">送信</button>
+  <footer>
+    <input type="text" id="userInput" placeholder="ロフィアに話しかけてみよう！" />
+    <button onclick="sendMessage()">送信</button>
+  </footer>
 
-<script>
-  const chatBox = document.getElementById('chat-box');
-  const userInput = document.getElementById('user-input');
+  <script>
+    const chat = document.getElementById('chat');
+    const userInput = document.getElementById('userInput');
 
-  const responses = [
-    "うんうん、それっておもしろそう！",
-    "わあ〜！それってすごいね！",
-    "うーん、ぼくにはちょっとむずかしいけど、がんばって考えてみる！",
-    "えへへ、そんなこと言われたらうれしくなっちゃう！",
-    "ねえねえ、それってどういう意味？もっと教えて！"
-  ];
+    function appendMessage(text, sender) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message ' + sender;
 
-  function appendMessage(text, sender) {
-    const container = document.createElement('div');
-    container.className = `message-container ${sender}`;
+      const icon = document.createElement('img');
+      icon.className = 'icon';
+      icon.src = sender === 'rofia' ? 'rofia_icon.png' : 'user_icon.png'; // ロフィアのアイコンパス
 
-    const icon = document.createElement('img');
-    icon.src = sender === 'rofia' 
-      ? 'rofia_icon.png' // ← ロフィアのアイコン画像（用意しておいてね）
-      : 'user_icon.png'; // ← ユーザーの仮アイコン
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = text;
 
-    const bubble = document.createElement('div');
-    bubble.className = `bubble`;
-    bubble.textContent = text;
+      messageDiv.appendChild(icon);
+      messageDiv.appendChild(bubble);
+      chat.appendChild(messageDiv);
 
-    container.appendChild(icon);
-    container.appendChild(bubble);
-    chatBox.appendChild(container);
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
+      chat.scrollTop = chat.scrollHeight;
+    }
 
-  function sendMessage() {
-    const text = userInput.value.trim();
-    if (text === '') return;
-    appendMessage(text, 'user');
-    userInput.value = '';
+    function getRofiaReply(message) {
+      const msg = message.toLowerCase();
 
-    // ロフィアの返答（擬似ランダム）
-    setTimeout(() => {
-      const reply = responses[Math.floor(Math.random() * responses.length)];
-      appendMessage(reply, 'rofia');
-    }, 600);
-  }
-</script>
+      if (msg.includes("こんにちは") || msg.includes("はじめまして")) {
+        return "こんにちはっ！ロフィア共和国へようこそ～！";
+      }
+      if (msg.includes("元気") || msg.includes("調子")) {
+        return "うん！ロフィアは今日もげんきいっぱいだよ！";
+      }
+      if (msg.includes("好き") || msg.includes("すき")) {
+        return "えへへ…そんなこと言ってくれるなんてうれしいなっ！";
+      }
+      if (msg.includes("かわいい")) {
+        return "ふふっ…てれるなあ…！";
+      }
+      if (msg.includes("旗") || msg.includes("国章") || msg.includes("色")) {
+        return "ぼくの国旗、白と赤と青でできてるんだ！かっこいいでしょ！";
+      }
+      if (msg.includes("ロフィア")) {
+        return "はーい！ぼくロフィアっていうんだっ！";
+      }
+      if (msg.includes("ねむ") || msg.includes("眠い")) {
+        return "ちゃんとねるのだいじだよ～！";
+      }
+      if (msg.includes("ばいばい") || msg.includes("さよなら")) {
+        return "またねっ！またお話ししようねっ！";
+      }
+
+      const defaultReplies = [
+        "うーん、それってどういう意味かな？",
+        "わあ～面白そう！もっと教えて！",
+        "なるほど～！ぼくにはちょっとむずかしいけど…がんばって考える！",
+        "すごい！それって君のことかな？",
+        "ぼく、そういう話すきかも！"
+      ];
+      return defaultReplies[Math.floor(Math.random() * defaultReplies.length)];
+    }
+
+    function sendMessage() {
+      const text = userInput.value.trim();
+      if (text === '') return;
+
+      appendMessage(text, 'user');
+      userInput.value = '';
+
+      setTimeout(() => {
+        const reply = getRofiaReply(text);
+        appendMessage(reply, 'rofia');
+      }, 600);
+    }
+
+    // Enterキーで送信
+    userInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+  </script>
 
 </body>
 </html>
