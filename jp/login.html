@@ -116,10 +116,10 @@
   <h2>ログインフォーム</h2>
   <form id="login-form">
     <label for="email">メールアドレス</label>
-    <input type="email" id="email" required>
+    <input type="email" id="email" required autocomplete="username" />
 
     <label for="password">パスワード</label>
-    <input type="password" id="password" required>
+    <input type="password" id="password" required autocomplete="current-password" />
 
     <button type="submit">ログイン</button>
     <div id="login-message"></div>
@@ -152,43 +152,43 @@
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
 
-    // サインイン
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (error) {
+      if (error) throw error;
+
+      // ログイン成功時、プロフィールの審査状況をチェック
+      const userId = data.user.id;
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('status')
+        .eq('id', userId)
+        .single();
+
+      if (profileError || !profile) {
+        messageDiv.textContent = 'プロフィール情報の取得に失敗しました。管理者にお問い合わせください。';
+        messageDiv.style.color = 'red';
+        return;
+      }
+
+      if (profile.status === 'approved') {
+        messageDiv.textContent = 'ログイン成功！国民専用ページへ移動します。';
+        messageDiv.style.color = 'green';
+        setTimeout(() => {
+          window.location.href = 'citizen_page.html'; // 国民専用ページURLに変更してください
+        }, 1500);
+      } else if (profile.status === 'pending') {
+        messageDiv.textContent = '現在、入国審査中です。承認されるまでお待ちください。';
+        messageDiv.style.color = 'orange';
+        setTimeout(() => {
+          window.location.href = 'pending.html'; // 審査中ページURLに変更してください
+        }, 3000);
+      } else {
+        messageDiv.textContent = '入国が拒否されています。詳しくは管理者にお問い合わせください。';
+        messageDiv.style.color = 'red';
+      }
+    } catch (error) {
       messageDiv.textContent = 'ログイン失敗: ' + error.message;
-      messageDiv.style.color = 'red';
-      return;
-    }
-
-    // ログイン成功時、プロフィールの審査状況をチェック
-    const userId = data.user.id;
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('status')
-      .eq('id', userId)
-      .single();
-
-    if (profileError || !profile) {
-      messageDiv.textContent = 'プロフィール情報の取得に失敗しました。管理者にお問い合わせください。';
-      messageDiv.style.color = 'red';
-      return;
-    }
-
-    if (profile.status === 'approved') {
-      messageDiv.textContent = 'ログイン成功！国民専用ページへ移動します。';
-      messageDiv.style.color = 'green';
-      setTimeout(() => {
-        window.location.href = 'citizen_page.html'; // 国民専用ページURLに変更してください
-      }, 1500);
-    } else if (profile.status === 'pending') {
-      messageDiv.textContent = '現在、入国審査中です。承認されるまでお待ちください。';
-      messageDiv.style.color = 'orange';
-      setTimeout(() => {
-        window.location.href = 'pending.html'; // 審査中ページURLに変更してください
-      }, 3000);
-    } else {
-      messageDiv.textContent = '入国が拒否されています。詳しくは管理者にお問い合わせください。';
       messageDiv.style.color = 'red';
     }
   });
