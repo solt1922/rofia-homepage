@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ロフィア共和国- ログイン </title>
+  <title>ロフィア共和国 - ログイン</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body {
@@ -12,7 +12,6 @@
       background-color: #f4f9fb;
       color: #222;
     }
-
     header, footer {
       text-align: center;
       padding: 2rem 1rem;
@@ -21,13 +20,11 @@
       max-width: 900px;
       margin: 0 auto;
     }
-
     main {
       padding: 2rem;
       max-width: 900px;
       margin: 60px auto 20px auto;
     }
-
     #menu-btn {
       position: fixed;
       top: 10px;
@@ -40,7 +37,6 @@
       z-index: 1100;
       font-weight: bold;
     }
-
     .sidebar {
       background-color: #2d3e50;
       width: 180px;
@@ -56,22 +52,18 @@
       display: flex;
       flex-direction: column;
     }
-
     .sidebar.show {
       left: 0;
     }
-
     .sidebar a {
       color: white;
       text-decoration: none;
       padding: 0.8rem 1rem;
       font-weight: bold;
     }
-
     .sidebar a:hover {
       background-color: #3f5873;
     }
-
     form {
       max-width: 400px;
       margin: auto;
@@ -80,7 +72,6 @@
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-
     input {
       width: 100%;
       padding: 0.6rem;
@@ -88,7 +79,6 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
-
     button {
       background: #2d3e50;
       color: white;
@@ -97,7 +87,6 @@
       border-radius: 4px;
       cursor: pointer;
     }
-
     #login-message {
       margin-top: 1rem;
       font-weight: bold;
@@ -149,7 +138,7 @@
   });
 
   const supabaseUrl = 'https://vavdzddueehsdodsmlzk.supabase.co';
-  const supabaseKey = 'あなたのAPIキー'; // 環境に応じて管理
+  const supabaseKey = 'あなたのAPIキー'; // 適切に管理してください
   const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
   const loginForm = document.getElementById('login-form');
@@ -157,20 +146,50 @@
 
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    messageDiv.textContent = '';
+    messageDiv.style.color = 'black';
+
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    // サインイン
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       messageDiv.textContent = 'ログイン失敗: ' + error.message;
       messageDiv.style.color = 'red';
-    } else {
-      messageDiv.textContent = 'ログイン成功！';
-      messageDiv.style.color = 'green';
+      return;
+    }
 
-      // 任意: マイページなどにリダイレクト
-      // window.location.href = "mypage.html";
+    // ログイン成功時、プロフィールの審査状況をチェック
+    const userId = data.user.id;
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('status')
+      .eq('id', userId)
+      .single();
+
+    if (profileError || !profile) {
+      messageDiv.textContent = 'プロフィール情報の取得に失敗しました。管理者にお問い合わせください。';
+      messageDiv.style.color = 'red';
+      return;
+    }
+
+    if (profile.status === 'approved') {
+      messageDiv.textContent = 'ログイン成功！国民専用ページへ移動します。';
+      messageDiv.style.color = 'green';
+      setTimeout(() => {
+        window.location.href = 'citizen_page.html'; // 国民専用ページURLに変更してください
+      }, 1500);
+    } else if (profile.status === 'pending') {
+      messageDiv.textContent = '現在、入国審査中です。承認されるまでお待ちください。';
+      messageDiv.style.color = 'orange';
+      setTimeout(() => {
+        window.location.href = 'pending.html'; // 審査中ページURLに変更してください
+      }, 3000);
+    } else {
+      messageDiv.textContent = '入国が拒否されています。詳しくは管理者にお問い合わせください。';
+      messageDiv.style.color = 'red';
     }
   });
 </script>
