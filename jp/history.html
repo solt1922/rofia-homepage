@@ -1,81 +1,90 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ロフィア共和国</title>
-<style>
-  body {
-    font-family: "Yu Gothic", sans-serif;
-    margin: 0;
-    background-color: #f4f9fb;
-    color: #222;
-    transition: margin-left 0.3s;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ロフィア共和国の歴史</title>
+  <style>
+    body {
+      font-family: "Yu Gothic", sans-serif;
+      margin: 0;
+      background-color: #f4f9fb;
+      color: #222;
+      transition: margin-left 0.3s;
+    }
 
-  /* メニューボタン */
-  #menu-btn {
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    background-color: #2d3e50;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    z-index: 1100;
-    font-weight: bold;
-  }
+    #menu-btn {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background-color: #2d3e50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      z-index: 1100;
+      font-weight: bold;
+    }
 
-  /* サイドバー */
-  .sidebar {
-    background-color: #2d3e50;
-    width: 180px;
-    padding-top: 2rem;
-    box-sizing: border-box;
-    position: fixed;
-    height: 100vh;
-    top: 0;
-    left: -180px; /* 初期は画面外へ隠す */
-    overflow-y: auto;
-    transition: left 0.3s;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-  }
+    .sidebar {
+      background-color: #2d3e50;
+      width: 180px;
+      padding-top: 2rem;
+      box-sizing: border-box;
+      position: fixed;
+      height: 100vh;
+      top: 0;
+      left: -180px;
+      overflow-y: auto;
+      transition: left 0.3s;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+    }
 
-  .sidebar.show {
-    left: 0; /* 表示状態 */
-  }
+    .sidebar.show {
+      left: 0;
+    }
 
-  .sidebar a {
-    color: white;
-    text-decoration: none;
-    padding: 0.8rem 1rem;
-    font-weight: bold;
-  }
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 0.8rem 1rem;
+      font-weight: bold;
+    }
 
-  .sidebar a:hover {
-    background-color: #3f5873;
-  }
+    .sidebar a:hover {
+      background-color: #3f5873;
+    }
 
-  /* メインコンテンツ */
-  main {
-    padding: 2rem;
-    max-width: 900px;
-    margin: 60px auto 20px auto; /* メニューボタンの分だけ上に余白 */
-  }
+    header, footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      background-color: #2d3e50;
+      color: white;
+      max-width: 900px;
+      margin: 0 auto;
+    }
 
-  header, footer {
-    text-align: center;
-    padding: 2rem 1rem;
-    background-color: #2d3e50;
-    color: white;
-    max-width: 900px;
-    margin: 0 auto;
-  }
+    main {
+      padding: 2rem;
+      max-width: 900px;
+      margin: 60px auto 20px auto;
+    }
 
-</style>
+    section.history-event {
+      margin-bottom: 2rem;
+      background-color: #fff;
+      border-left: 5px solid #3f5873;
+      padding: 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    section.history-event h2 {
+      margin-top: 0;
+      color: #3f5873;
+    }
+  </style>
 </head>
 <body>
 
@@ -86,21 +95,37 @@
   <a href="flag.html">旗</a>
   <a href="laws.html">法律</a>
   <a href="history.html">ロフィア共和国の歴史</a>
-  <a href="">準備中</a>
-  <a href="">準備中</a>
+  <a href="#">準備中</a>
+  <a href="#">準備中</a>
   <a href="fan_guideline.html">二次創作ガイドライン</a>
 </nav>
 
-
+<header>
   <h1>ロフィア共和国の歴史</h1>
-    <div>2025年4月30日 ホームページ設立</div>
-    <p>ロフィア共和国がは当時ロフィア連邦共和国と言う名で、このホームページが作られた。だが後に連邦を撤去しロフィア共和国に改名された</p>
-    <div>2025年6月23日 公式キャラクターロフィアの誕生、そして国の新たな方針</div>
-    <p>我が国の公式キャラクターであり、国そのものとして存在するロフィアが生まれた、そしてわが国には新たに生きる国と言う在り方が生まれた</p>
-  
+</header>
 
-  <!-- ここにイベントをどんどん追加できます -->
+<main>
+  <section class="history-event">
+    <h2>2025年4月30日 ホームページ設立</h2>
+    <p>ロフィア共和国は当時「ロフィア連邦共和国」という名称で、このホームページが作られた。後に「連邦」を撤去し、「ロフィア共和国」に改名された。</p>
+  </section>
+
+  <section class="history-event">
+    <h2>2025年6月23日 ロフィアの誕生と新たな国家方針</h2>
+    <p>我が国の公式キャラクターであり、国そのものとして存在する「ロフィア」が生まれた。これにより、我が国には「生きる国家」という新たな在り方が定められた。</p>
+  </section>
+
+  <!-- 追加するイベントはここに記述 -->
 </main>
+
+<script>
+  const menuBtn = document.getElementById("menu-btn");
+  const sidebar = document.getElementById("sidebar");
+
+  menuBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("show");
+  });
+</script>
 
 </body>
 </html>
