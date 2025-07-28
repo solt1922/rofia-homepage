@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>公式サーバーについて - ロフィア共和国</title>
+  <style>
+    body {
+      font-family: "Yu Gothic", sans-serif;
+      margin: 0;
+      background-color: #f4f9fb;
+      color: #222;
+    }
+
+    #menu-btn {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background-color: #2d3e50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      z-index: 1100;
+      font-weight: bold;
+    }
+
+    .sidebar {
+      background-color: #2d3e50;
+      width: 180px;
+      padding-top: 2rem;
+      position: fixed;
+      height: 100vh;
+      top: 0;
+      left: -180px;
+      overflow-y: auto;
+      transition: left 0.3s;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar.show {
+      left: 0;
+    }
+
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 0.8rem 1rem;
+      font-weight: bold;
+    }
+
+    .sidebar a:hover {
+      background-color: #3f5873;
+    }
+
+    main {
+      padding: 2rem;
+      max-width: 900px;
+      margin: 60px auto 20px auto;
+    }
+
+    header, footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      background-color: #2d3e50;
+      color: white;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    section {
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      border-left: 5px solid #2d3e50;
+      padding-left: 10px;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+<button id="menu-btn">メニュー</button>
+
+<nav class="sidebar" id="sidebar">
+  <a href="index.html">ホーム</a>
+  <a href="flag.html">旗</a>
+  <a href="laws.html">法律</a>
+  <a href="history.html">ロフィア共和国の歴史</a>
+  <a href="server_info.html">公式サーバーについて</a>
+  <a href="fan_guideline.html">二次創作ガイドライン</a>
+</nav>
+
+<main>
+  <h1>ロフィア共和国公式サーバー</h1>
+
+  <section>
+    <h2>🌐 概要</h2>
+    <p>
+      ロフィア共和国の公式サーバーは、国民（ユーザー）同士の交流やイベント、入国の管理、国政への参加を目的としたディスコードサーバーです。
+    </p>
+  </section>
+
+  <section>
+    <h2>📌 主な機能</h2>
+    <ul>
+      <li>国政フォーラム（提案・議論）</li>
+      <li>市民広場（雑談・交流）</li>
+      <li>告知・ニュース</li>
+      <li>国家イベント（ロールプレイ・選挙）</li>
+      <li>他国家との交流(管理者・アドミン向け)</li>
+　　　<li>ロフィア君とのお話など</li> 
+    </ul>
+  </section>
+
+  <section>
+    <h2>🛡️ 利用ルール</h2>
+    <p>
+      以下のルールは厳守してください：
+      <ul>
+        <li>他者への敬意を持つ</li>
+        <li>過度なスパムや広告は禁止</li>
+        <li>国家の尊厳を損なう行為は禁止</li>
+      </ul>
+      詳細は <a href="laws.html">法律ページ</a> をご確認ください。
+    </p>
+  </section>
+
+  <section>
+    <h2>🔗 サーバー招待リンク</h2>
+    <p>
+      公式国民用サーバーへの参加はこちらから：<br />
+      <a href="https://discord.gg/WhDP9H73" target="_blank">👉 ロフィア公式Discordへ参加</a>
+    </p>
+  </section>
+
+</main>
+
+<script>
+  const menuBtn = document.getElementById('menu-btn');
+  const sidebar = document.getElementById('sidebar');
+
+  menuBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('show');
+  });
+</script>
+
+</body>
+</html>
