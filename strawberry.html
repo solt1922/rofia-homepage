@@ -1,4 +1,21 @@
-<canvas id="gameCanvas" width="800" height="600"></canvas>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>イチゴキャッチゲーム</title>
+<style>
+    body {
+        text-align: center;
+        background-color: #f0f0f0;
+    }
+    canvas {
+        background-color: #aee6ff;
+        border: 2px solid #333;
+    }
+</style>
+</head>
+<body>
+<canvas id="gameCanvas" width="500" height="500"></canvas>
 <script>
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -7,123 +24,129 @@ const ctx = canvas.getContext("2d");
 const basketImg = new Image();
 basketImg.src = "basket.png";
 
-const playerNormalImg = new Image();
-playerNormalImg.src = "rofiakun (1).png";
+const charNormal = new Image();
+charNormal.src = "rofiakun (1).png";
 
-const playerHappyImg = new Image();
-playerHappyImg.src = "rofiakun (2).png";
+const charHappy = new Image();
+charHappy.src = "rofiakun (2).png";
 
 const strawberryImg = new Image();
 strawberryImg.src = "strawberry.png";
 
-// ゲームオブジェクト
-let player = { x: 350, y: 500, width: 80, height: 80, speed: 7 };
-let basket = { x: 360, y: 550, width: 80, height: 50 };
+const bombImg = new Image();
+bombImg.src = "bomb.png"; // 爆弾画像は別途用意
+
+// キャラクター設定
+let character = {
+    x: canvas.width / 2 - 25,
+    y: canvas.height - 120,
+    width: 80,
+    speed: 6,
+    image: charNormal
+};
+
+// イチゴと爆弾
 let strawberries = [];
 let bombs = [];
 let score = 0;
-let playerImg = playerNormalImg;
 
-// キー入力
-let keys = {};
-document.addEventListener("keydown", (e) => { keys[e.key] = true; });
-document.addEventListener("keyup", (e) => { keys[e.key] = false; });
+// アスペクト比維持で描画する関数
+function drawImageAspect(img, x, y, width) {
+    const aspect = img.height / img.width;
+    ctx.drawImage(img, x, y, width, width * aspect);
+}
 
-// イチゴ生成
+// イベント
+document.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft") {
+        character.x -= character.speed;
+    }
+    if (e.key === "ArrowRight") {
+        character.x += character.speed;
+    }
+});
+
+// イチゴ生成（速度遅め）
 function spawnStrawberry() {
     strawberries.push({
-        x: Math.random() * (canvas.width - 30),
+        x: Math.random() * (canvas.width - 40),
         y: -30,
-        width: 30,
-        height: 30,
-        speed: 3
+        speed: 2
     });
 }
 setInterval(spawnStrawberry, 1000);
 
 // 爆弾生成（頻度低め）
 function spawnBomb() {
-    bombs.push({
-        x: Math.random() * (canvas.width - 30),
-        y: -30,
-        width: 30,
-        height: 30,
-        speed: 4
-    });
-}
-setInterval(spawnBomb, 2500);
-
-// 衝突判定
-function isColliding(a, b) {
-    return (
-        a.x < b.x + b.width &&
-        a.x + a.width > b.x &&
-        a.y < b.y + b.height &&
-        a.y + a.height > b.y
-    );
-}
-
-// ゲーム更新
-function update() {
-    if (keys["ArrowLeft"] && player.x > 0) {
-        player.x -= player.speed;
-        basket.x -= player.speed;
+    if (Math.random() < 0.4) { // 40% の確率
+        bombs.push({
+            x: Math.random() * (canvas.width - 40),
+            y: -30,
+            speed: 3
+        });
     }
-    if (keys["ArrowRight"] && player.x < canvas.width - player.width) {
-        player.x += player.speed;
-        basket.x += player.speed;
-    }
-
-    strawberries.forEach((strawberry, i) => {
-        strawberry.y += strawberry.speed;
-        if (isColliding(basket, strawberry)) {
-            strawberries.splice(i, 1);
-            score++;
-            playerImg = playerHappyImg;
-            setTimeout(() => { playerImg = playerNormalImg; }, 300);
-        }
-    });
-
-    bombs.forEach((bomb, i) => {
-        bomb.y += bomb.speed;
-        if (isColliding(basket, bomb)) {
-            bombs.splice(i, 1);
-            score -= 2;
-        }
-    });
-
-    strawberries = strawberries.filter(s => s.y < canvas.height);
-    bombs = bombs.filter(b => b.y < canvas.height);
 }
+setInterval(spawnBomb, 1500);
 
-// 描画
-function draw() {
+// ゲームループ
+function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
-    ctx.drawImage(basketImg, basket.x, basket.y, basket.width, basket.height);
+    // キャラクター描画
+    drawImageAspect(character.image, character.x, character.y, character.width);
 
-    strawberries.forEach(strawberry => {
-        ctx.drawImage(strawberryImg, strawberry.x, strawberry.y, strawberry.width, strawberry.height);
+    // バスケット描画（頭の上）
+    drawImageAspect(basketImg, character.x + 15, character.y - 30, 50);
+
+    // イチゴ描画＆移動
+    strawberries.forEach((strawberry, index) => {
+        strawberry.y += strawberry.speed;
+        drawImageAspect(strawberryImg, strawberry.x, strawberry.y, 40);
+
+        if (strawberry.y > canvas.height) {
+            strawberries.splice(index, 1);
+        }
+
+        // キャッチ判定
+        if (strawberry.x < character.x + character.width &&
+            strawberry.x + 40 > character.x &&
+            strawberry.y < character.y + character.width &&
+            strawberry.y + 40 > character.y) {
+            score++;
+            character.image = charHappy;
+            setTimeout(() => { character.image = charNormal; }, 300);
+            strawberries.splice(index, 1);
+        }
     });
 
-    bombs.forEach(bomb => {
-        ctx.beginPath();
-        ctx.arc(bomb.x + bomb.width / 2, bomb.y + bomb.height / 2, bomb.width / 2, 0, Math.PI * 2);
-        ctx.fillStyle = "black";
-        ctx.fill();
-        ctx.closePath();
+    // 爆弾描画＆移動
+    bombs.forEach((bomb, index) => {
+        bomb.y += bomb.speed;
+        drawImageAspect(bombImg, bomb.x, bomb.y, 40);
+
+        if (bomb.y > canvas.height) {
+            bombs.splice(index, 1);
+        }
+
+        // 爆弾当たり判定
+        if (bomb.x < character.x + character.width &&
+            bomb.x + 40 > character.x &&
+            bomb.y < character.y + character.width &&
+            bomb.y + 40 > character.y) {
+            score--;
+            bombs.splice(index, 1);
+        }
     });
 
-    ctx.fillStyle = "black";
+    // スコア描画
+    ctx.fillStyle = "#000";
     ctx.font = "20px Arial";
-    ctx.fillText("Score: " + score, 10, 20);
-}
+    ctx.fillText("Score: " + score, 10, 25);
 
-function gameLoop() {
-    update();
-    draw();
     requestAnimationFrame(gameLoop);
 }
 gameLoop();
 </script>
+</body>
+</html>
+
