@@ -109,8 +109,7 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // プレイヤー
-    ctx.drawImage(player.image, player.x, player.y, player.width, player.height);
-    ctx.drawImage(basketImg, player.x + (player.width - 80) / 2, player.y - player.basketOffsetY, 80, 50);
+ drawImageAspect(character.image, character.x, character.y, character.width);
 
     // イチゴ
     strawberries.forEach(s => {
