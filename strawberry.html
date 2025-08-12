@@ -18,16 +18,24 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 let score = 0;
-let basket = { x: 180, y: 400, width: 60, height: 100, speed: 8 };
+let basket = { x: 180, y: 380, width: 60, height: 100, speed: 8 }; // キャラの位置を少し上げてカゴが置けるように
 let strawberries = [];
-let currentFace = "normal"; // normal or happy
+let currentFace = "normal";
 let faceTimer = 0;
 
-// キャラ画像の読み込み
+// キャラ画像
 const charNormal = new Image();
 charNormal.src = "rofiakun (1).png"; // 通常顔
 const charHappy = new Image();
 charHappy.src = "rofiakun (2).png"; // 嬉しい顔
+
+// イチゴ画像
+const strawberryImg = new Image();
+strawberryImg.src = "strawberry.png"; // 本物のいちご画像
+
+// カゴ画像
+const basketImg = new Image();
+basketImg.src = "basket.png"; // カゴの画像
 
 document.addEventListener("keydown", e => {
   if (e.key === "ArrowLeft") basket.x -= basket.speed;
@@ -52,17 +60,18 @@ function update() {
   let charImg = currentFace === "happy" ? charHappy : charNormal;
   ctx.drawImage(charImg, basket.x, basket.y, basket.width, basket.height);
 
+  // カゴの描画（キャラの足元）
+  ctx.drawImage(basketImg, basket.x - 5, basket.y + basket.height - 10, basket.width + 10, 20);
+
   // イチゴ描画と移動
-  ctx.fillStyle = "red";
   strawberries.forEach((s, i) => {
-    ctx.beginPath();
-    ctx.arc(s.x + s.size/2, s.y + s.size/2, s.size/2, 0, Math.PI*2);
-    ctx.fill();
+    ctx.drawImage(strawberryImg, s.x, s.y, s.size, s.size);
     s.y += s.speed;
 
-    // キャッチ判定
+    // キャッチ判定（カゴ位置で判定）
+    let basketTop = basket.y + basket.height - 10;
     if (
-      s.y + s.size >= basket.y &&
+      s.y + s.size >= basketTop &&
       s.x + s.size > basket.x &&
       s.x < basket.x + basket.width
     ) {
@@ -70,9 +79,8 @@ function update() {
       score++;
       document.getElementById("score").textContent = score;
 
-      // 顔を変えてタイマー開始
       currentFace = "happy";
-      faceTimer = 30; // 約0.5秒（60fps基準）
+      faceTimer = 30; // 約0.5秒
     }
 
     // 画面外に出たら削除
@@ -81,12 +89,10 @@ function update() {
     }
   });
 
-  // 顔戻しタイマー
+  // 顔戻し
   if (faceTimer > 0) {
     faceTimer--;
-    if (faceTimer === 0) {
-      currentFace = "normal";
-    }
+    if (faceTimer === 0) currentFace = "normal";
   }
 
   requestAnimationFrame(update);
@@ -97,5 +103,3 @@ update();
 </script>
 </body>
 </html>
-
-
