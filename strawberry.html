@@ -109,8 +109,7 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // プレイヤー
-    ctx.drawImage(player.image, player.x, player.y, player.width, player.height);
-
+    drawImageAspect(characterImage, character.x, character.y, 80);
     // イチゴ
     strawberries.forEach(s => {
         ctx.drawImage(strawberryImg, s.x, s.y, s.width, s.height);
