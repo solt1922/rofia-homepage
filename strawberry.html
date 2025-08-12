@@ -35,8 +35,8 @@ strawberryImg.src = 'strawberry.png';
 
 // プレイヤー設定
 let player = {
-    x: canvas.width / 2,
-    y: canvas.height - 140,
+    x: canvas.width / 2 - 60,
+    y: canvas.height - 160,
     width: 120,
     height: 160,
     speed: 6,
@@ -109,7 +109,17 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // プレイヤー
-    drawImageAspect(characterImage, character.x, character.y, 80);
+    ctx.drawImage(player.image, player.x, player.y, player.width, player.height);
+
+    // バスケット（頭の上）
+    ctx.drawImage(
+        basketImg,
+        player.x + (player.width - 80) / 2,
+        player.y - player.basketOffsetY,
+        80,
+        50
+    );
+
     // イチゴ
     strawberries.forEach(s => {
         ctx.drawImage(strawberryImg, s.x, s.y, s.width, s.height);
