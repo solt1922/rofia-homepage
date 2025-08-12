@@ -24,6 +24,7 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// 画像読み込み
 const playerImgNormal = new Image();
 playerImgNormal.src = 'rofiakun (1).png';
 const playerImgHappy = new Image();
@@ -33,12 +34,16 @@ basketImg.src = 'basket.png';
 const strawberryImg = new Image();
 strawberryImg.src = 'strawberry.png';
 
-// プレイヤー設定
+// プレイヤー設定（アスペクト比固定）
+const aspectRatio = 0.517; // 幅 ÷ 高さ
+let playerHeight = 160;    // 高さだけ決める
+let playerWidth = playerHeight * aspectRatio;
+
 let player = {
-    x: canvas.width / 2 - 60,
-    y: canvas.height - 160,
-    width: 120,
-    height: 160,
+    x: canvas.width / 2 - playerWidth / 2,
+    y: canvas.height - playerHeight - 20,
+    width: playerWidth,
+    height: playerHeight,
     speed: 6,
     image: playerImgNormal,
     basketOffsetY: 20
@@ -108,7 +113,7 @@ function update() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // プレイヤー
+    // プレイヤー（比率固定）
     ctx.drawImage(player.image, player.x, player.y, player.width, player.height);
 
     // バスケット（頭の上）
