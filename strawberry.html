@@ -18,12 +18,16 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 let score = 0;
-let basket = { x: 180, y: 450, width: 50, height: 50, speed: 5 };
+// キャラ速度を上げる
+let basket = { x: 180, y: 450, width: 50, height: 50, speed: 8 };
 let strawberries = [];
 
 document.addEventListener("keydown", e => {
   if (e.key === "ArrowLeft") basket.x -= basket.speed;
   if (e.key === "ArrowRight") basket.x += basket.speed;
+  // 画面外に出ないよう制限
+  if (basket.x < 0) basket.x = 0;
+  if (basket.x > canvas.width - basket.width) basket.x = canvas.width - basket.width;
 });
 
 function spawnStrawberry() {
@@ -31,7 +35,8 @@ function spawnStrawberry() {
     x: Math.random() * (canvas.width - 30),
     y: 0,
     size: 30,
-    speed: 2 + Math.random() * 3
+    // イチゴ速度を遅くする
+    speed: 1.5 + Math.random() * 1
   });
 }
 
