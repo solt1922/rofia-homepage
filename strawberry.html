@@ -2,180 +2,108 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>ウェブいちご狩りゲーム</title>
+<title>いちごキャッチゲーム</title>
 <style>
-    body {
-        background-color: #f8f0f0;
-        text-align: center;
-        font-family: Arial, sans-serif;
-    }
-    canvas {
-        background-color: #cce7ff;
-        display: block;
-        margin: 0 auto;
-        border: 2px solid #444;
-    }
+  body { background: #fdf3f6; text-align: center; font-family: sans-serif; }
+  canvas { background: #a3d977; border-radius: 10px; }
 </style>
 </head>
 <body>
-
-<h1>🍓 ウェブいちご狩りゲーム 🍓</h1>
-<canvas id="gameCanvas" width="500" height="400"></canvas>
-<div id="ranking"></div>
+<h1>🍓いちごキャッチ🍓</h1>
+<p>スコア: <span id="score">0</span></p>
+<canvas id="gameCanvas" width="400" height="500"></canvas>
 
 <script>
-// --- ゲーム設定 ---
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-let basketX = canvas.width / 2 - 25;
-let basketY = canvas.height - 100;
-let basketWidth = 50;
-let basketHeight = 50;
-let basketSpeed = 7;
-
-let strawberryX = Math.random() * (canvas.width - 30);
-let strawberryY = -30;
-let strawberrySize = 30;
-let strawberrySpeed = 3;
-
 let score = 0;
-let timeLeft = 30;
-let gameOver = false;
-let faceChange = false;
+let player = { x: 180, y: 400, width: 60, height: 100, speed: 8 };
+let strawberries = [];
+let currentFace = "normal";
+let faceTimer = 0;
 
-let keys = {};
-
-// --- 画像読み込み ---
+// キャラ画像
 const charNormal = new Image();
-charNormal.src = "char_normal.png"; // 通常時
-
+charNormal.src = "rofiakun (1).png";
 const charHappy = new Image();
-charHappy.src = "char_happy.png"; // いちご取った時
+charHappy.src = "rofiakun (2).png";
 
+// イチゴ画像
+const strawberryImg = new Image();
+strawberryImg.src = "strawberry.png";
+
+// カゴ画像
 const basketImg = new Image();
 basketImg.src = "basket.png";
 
-const strawberryImg = new Image();
-strawberryImg.src = "strawberry.png"; // 通常いちご
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowLeft") player.x -= player.speed;
+  if (e.key === "ArrowRight") player.x += player.speed;
+  if (player.x < 0) player.x = 0;
+  if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
+});
 
-// --- キー操作 ---
-document.addEventListener("keydown", e => keys[e.key] = true);
-document.addEventListener("keyup", e => keys[e.key] = false);
-
-// --- タイマー ---
-let timer = setInterval(() => {
-    if (!gameOver) {
-        timeLeft--;
-        if (timeLeft <= 0) {
-            endGame();
-        }
-    }
-}, 1000);
-
-// --- ゲーム終了処理 ---
-function endGame() {
-    gameOver = true;
-    clearInterval(timer);
-    saveScore(score);
-    drawRanking();
+function spawnStrawberry() {
+  strawberries.push({
+    x: Math.random() * (canvas.width - 30),
+    y: 0,
+    size: 30,
+    speed: 1.5 + Math.random() * 1
+  });
 }
 
-// --- スコア保存 ---
-function saveScore(s) {
-    let scores = JSON.parse(localStorage.getItem("ranking")) || [];
-    scores.push(s);
-    scores.sort((a, b) => b - a);
-    scores = scores.slice(0, 5); // 上位5件だけ
-    localStorage.setItem("ranking", JSON.stringify(scores));
-}
-
-// --- ランキング表示 ---
-function drawRanking() {
-    let scores = JSON.parse(localStorage.getItem("ranking")) || [];
-    let html = "<h2>🏆 ランキング</h2><ol>";
-    scores.forEach(s => {
-        html += `<li>${s} 点</li>`;
-    });
-    html += "</ol>";
-    document.getElementById("ranking").innerHTML = html;
-}
-
-// --- 描画 ---
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // キャラ描画
-    if (faceChange) {
-        ctx.drawImage(charHappy, basketX - 10, basketY - 80, 70, 70);
-    } else {
-        ctx.drawImage(charNormal, basketX - 10, basketY - 80, 70, 70);
-    }
-
-    // バスケット描画（頭上）
-    ctx.drawImage(basketImg, basketX, basketY, basketWidth, basketHeight);
-
-    // イチゴ描画
-    ctx.drawImage(strawberryImg, strawberryX, strawberryY, strawberrySize, strawberrySize);
-
-    // スコアと時間
-    ctx.fillStyle = "black";
-    ctx.font = "20px Arial";
-    ctx.fillText(`Score: ${score}`, 10, 25);
-    ctx.fillText(`Time: ${timeLeft}`, 400, 25);
-
-    if (gameOver) {
-        ctx.fillStyle = "red";
-        ctx.font = "40px Arial";
-        ctx.fillText("GAME OVER", canvas.width / 2 - 120, canvas.height / 2);
-    }
-}
-
-// --- 更新 ---
 function update() {
-    if (keys["ArrowLeft"] && basketX > 0) basketX -= basketSpeed;
-    if (keys["ArrowRight"] && basketX < canvas.width - basketWidth) basketX += basketSpeed;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    strawberryY += strawberrySpeed;
+  // キャラ描画
+  let charImg = currentFace === "happy" ? charHappy : charNormal;
+  ctx.drawImage(charImg, player.x, player.y, player.width, player.height);
 
-    // キャッチ判定
+  // カゴ描画（頭の上）
+  let basketWidth = player.width + 20;
+  let basketHeight = 20;
+  let basketX = player.x - 10;
+  let basketY = player.y - basketHeight + 5; // 頭の上に配置
+  ctx.drawImage(basketImg, basketX, basketY, basketWidth, basketHeight);
+
+  // イチゴ描画と移動
+  strawberries.forEach((s, i) => {
+    ctx.drawImage(strawberryImg, s.x, s.y, s.size, s.size);
+    s.y += s.speed;
+
+    // キャッチ判定（カゴ位置）
     if (
-        strawberryY + strawberrySize >= basketY &&
-        strawberryX + strawberrySize > basketX &&
-        strawberryX < basketX + basketWidth
+      s.y + s.size >= basketY &&
+      s.y <= basketY + basketHeight &&
+      s.x + s.size > basketX &&
+      s.x < basketX + basketWidth
     ) {
-        score++;
-        faceChange = true;
-        setTimeout(() => faceChange = false, 300);
-        strawberryX = Math.random() * (canvas.width - strawberrySize);
-        strawberryY = -strawberrySize;
+      strawberries.splice(i, 1);
+      score++;
+      document.getElementById("score").textContent = score;
+      currentFace = "happy";
+      faceTimer = 30;
     }
 
-    // 画面外に落ちたらリセット
-    if (strawberryY > canvas.height) {
-        strawberryX = Math.random() * (canvas.width - strawberrySize);
-        strawberryY = -strawberrySize;
+    // 画面外に出たら削除
+    if (s.y > canvas.height) {
+      strawberries.splice(i, 1);
     }
+  });
+
+  // 顔戻し
+  if (faceTimer > 0) {
+    faceTimer--;
+    if (faceTimer === 0) currentFace = "normal";
+  }
+
+  requestAnimationFrame(update);
 }
-
-// --- ゲームループ ---
-function gameLoop() {
-    draw();
-    if (!gameOver) {
-        update();
-        requestAnimationFrame(gameLoop);
-    }
-}
-
-drawRanking();
-gameLoop();
-</script>
-</body>
-</html>
-
 
 setInterval(spawnStrawberry, 1000);
 update();
 </script>
 </body>
 </html>
+
