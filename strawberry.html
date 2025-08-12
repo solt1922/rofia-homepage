@@ -18,14 +18,20 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 let score = 0;
-// キャラ速度を上げる
-let basket = { x: 180, y: 450, width: 50, height: 50, speed: 8 };
+let basket = { x: 180, y: 400, width: 60, height: 100, speed: 8 };
 let strawberries = [];
+let currentFace = "normal"; // normal or happy
+let faceTimer = 0;
+
+// キャラ画像の読み込み
+const charNormal = new Image();
+charNormal.src = "rofiakun (1).png"; // 通常顔
+const charHappy = new Image();
+charHappy.src = "rofiakun (2).png"; // 嬉しい顔
 
 document.addEventListener("keydown", e => {
   if (e.key === "ArrowLeft") basket.x -= basket.speed;
   if (e.key === "ArrowRight") basket.x += basket.speed;
-  // 画面外に出ないよう制限
   if (basket.x < 0) basket.x = 0;
   if (basket.x > canvas.width - basket.width) basket.x = canvas.width - basket.width;
 });
@@ -35,7 +41,6 @@ function spawnStrawberry() {
     x: Math.random() * (canvas.width - 30),
     y: 0,
     size: 30,
-    // イチゴ速度を遅くする
     speed: 1.5 + Math.random() * 1
   });
 }
@@ -43,9 +48,9 @@ function spawnStrawberry() {
 function update() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // かご
-  ctx.fillStyle = "brown";
-  ctx.fillRect(basket.x, basket.y, basket.width, basket.height);
+  // キャラの描画
+  let charImg = currentFace === "happy" ? charHappy : charNormal;
+  ctx.drawImage(charImg, basket.x, basket.y, basket.width, basket.height);
 
   // イチゴ描画と移動
   ctx.fillStyle = "red";
@@ -64,13 +69,25 @@ function update() {
       strawberries.splice(i, 1);
       score++;
       document.getElementById("score").textContent = score;
+
+      // 顔を変えてタイマー開始
+      currentFace = "happy";
+      faceTimer = 30; // 約0.5秒（60fps基準）
     }
 
-    // 画面外に出たら消す
+    // 画面外に出たら削除
     if (s.y > canvas.height) {
       strawberries.splice(i, 1);
     }
   });
+
+  // 顔戻しタイマー
+  if (faceTimer > 0) {
+    faceTimer--;
+    if (faceTimer === 0) {
+      currentFace = "normal";
+    }
+  }
 
   requestAnimationFrame(update);
 }
@@ -80,4 +97,5 @@ update();
 </script>
 </body>
 </html>
+
 
