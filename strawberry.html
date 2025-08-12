@@ -34,39 +34,38 @@ const strawberryImg = new Image();
 strawberryImg.src = "strawberry.png";
 
 const bombImg = new Image();
-bombImg.src = "bomb.png"; // 爆弾画像は別途用意
+bombImg.src = "bomb.png";
 
 // キャラクター設定
 let character = {
-    x: canvas.width / 2 - 25,
+    x: canvas.width / 2 - 40,
     y: canvas.height - 120,
     width: 80,
     speed: 6,
     image: charNormal
 };
 
-// イチゴと爆弾
+// オブジェクト
 let strawberries = [];
 let bombs = [];
 let score = 0;
 
-// アスペクト比維持で描画する関数
+// アスペクト比維持で描画
 function drawImageAspect(img, x, y, width) {
+    if (!img.complete) return; // 読み込み前は描画しない
     const aspect = img.height / img.width;
     ctx.drawImage(img, x, y, width, width * aspect);
 }
 
-// イベント
+// キー操作
 document.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft") {
-        character.x -= character.speed;
-    }
-    if (e.key === "ArrowRight") {
-        character.x += character.speed;
-    }
+    if (e.key === "ArrowLeft") character.x -= character.speed;
+    if (e.key === "ArrowRight") character.x += character.speed;
+    if (character.x < 0) character.x = 0;
+    if (character.x > canvas.width - character.width) character.x = canvas.width - character.width;
 });
 
-// イチゴ生成（速度遅め）
+// イチゴ生成
 function spawnStrawberry() {
     strawberries.push({
         x: Math.random() * (canvas.width - 40),
@@ -76,9 +75,9 @@ function spawnStrawberry() {
 }
 setInterval(spawnStrawberry, 1000);
 
-// 爆弾生成（頻度低め）
+// 爆弾生成（確率低め）
 function spawnBomb() {
-    if (Math.random() < 0.4) { // 40% の確率
+    if (Math.random() < 0.2) { // 20% の確率
         bombs.push({
             x: Math.random() * (canvas.width - 40),
             y: -30,
@@ -94,51 +93,66 @@ function gameLoop() {
 
     // キャラクター描画
     drawImageAspect(character.image, character.x, character.y, character.width);
-
-    // バスケット描画（頭の上）
+    // バスケット描画
     drawImageAspect(basketImg, character.x + 15, character.y - 30, 50);
 
-    // イチゴ描画＆移動
-    strawberries.forEach((strawberry, index) => {
-        strawberry.y += strawberry.speed;
-        drawImageAspect(strawberryImg, strawberry.x, strawberry.y, 40);
+    // イチゴ処理（後ろからループ）
+    for (let i = strawberries.length - 1; i >= 0; i--) {
+        let s = strawberries[i];
+        s.y += s.speed;
+        drawImageAspect(strawberryImg, s.x, s.y, 40);
 
-        if (strawberry.y > canvas.height) {
-            strawberries.splice(index, 1);
+        if (s.y > canvas.height) {
+            strawberries.splice(i, 1);
+            continue;
         }
 
-        // キャッチ判定
-        if (strawberry.x < character.x + character.width &&
-            strawberry.x + 40 > character.x &&
-            strawberry.y < character.y + character.width &&
-            strawberry.y + 40 > character.y) {
+        // キャッチ判定（バスケット範囲）
+        let basketX = character.x + 15;
+        let basketY = character.y - 30;
+        let basketW = 50;
+        let basketH = 30;
+        if (
+            s.x < basketX + basketW &&
+            s.x + 40 > basketX &&
+            s.y < basketY + basketH &&
+            s.y + 40 > basketY
+        ) {
             score++;
             character.image = charHappy;
             setTimeout(() => { character.image = charNormal; }, 300);
-            strawberries.splice(index, 1);
+            strawberries.splice(i, 1);
         }
-    });
+    }
 
-    // 爆弾描画＆移動
-    bombs.forEach((bomb, index) => {
-        bomb.y += bomb.speed;
-        drawImageAspect(bombImg, bomb.x, bomb.y, 40);
+    // 爆弾処理
+    for (let i = bombs.length - 1; i >= 0; i--) {
+        let b = bombs[i];
+        b.y += b.speed;
+        drawImageAspect(bombImg, b.x, b.y, 40);
 
-        if (bomb.y > canvas.height) {
-            bombs.splice(index, 1);
+        if (b.y > canvas.height) {
+            bombs.splice(i, 1);
+            continue;
         }
 
-        // 爆弾当たり判定
-        if (bomb.x < character.x + character.width &&
-            bomb.x + 40 > character.x &&
-            bomb.y < character.y + character.width &&
-            bomb.y + 40 > character.y) {
-            score--;
-            bombs.splice(index, 1);
+        // 当たり判定（バスケット範囲）
+        let basketX = character.x + 15;
+        let basketY = character.y - 30;
+        let basketW = 50;
+        let basketH = 30;
+        if (
+            b.x < basketX + basketW &&
+            b.x + 40 > basketX &&
+            b.y < basketY + basketH &&
+            b.y + 40 > basketY
+        ) {
+            alert("💥ゲームオーバー！ スコア: " + score);
+            document.location.reload();
         }
-    });
+    }
 
-    // スコア描画
+    // スコア表示
     ctx.fillStyle = "#000";
     ctx.font = "20px Arial";
     ctx.fillText("Score: " + score, 10, 25);
@@ -149,4 +163,5 @@ gameLoop();
 </script>
 </body>
 </html>
+
 
