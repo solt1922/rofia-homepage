@@ -18,30 +18,30 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 let score = 0;
-let basket = { x: 180, y: 380, width: 60, height: 100, speed: 8 }; // キャラの位置を少し上げてカゴが置けるように
+let player = { x: 180, y: 400, width: 60, height: 100, speed: 8 };
 let strawberries = [];
 let currentFace = "normal";
 let faceTimer = 0;
 
 // キャラ画像
 const charNormal = new Image();
-charNormal.src = "rofiakun (1).png"; // 通常顔
+charNormal.src = "rofiakun (1).png";
 const charHappy = new Image();
-charHappy.src = "rofiakun (2).png"; // 嬉しい顔
+charHappy.src = "rofiakun (2).png";
 
 // イチゴ画像
 const strawberryImg = new Image();
-strawberryImg.src = "strawberry.png"; // 本物のいちご画像
+strawberryImg.src = "strawberry.png";
 
 // カゴ画像
 const basketImg = new Image();
-basketImg.src = "basket.png"; // カゴの画像
+basketImg.src = "basket.png";
 
 document.addEventListener("keydown", e => {
-  if (e.key === "ArrowLeft") basket.x -= basket.speed;
-  if (e.key === "ArrowRight") basket.x += basket.speed;
-  if (basket.x < 0) basket.x = 0;
-  if (basket.x > canvas.width - basket.width) basket.x = canvas.width - basket.width;
+  if (e.key === "ArrowLeft") player.x -= player.speed;
+  if (e.key === "ArrowRight") player.x += player.speed;
+  if (player.x < 0) player.x = 0;
+  if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
 });
 
 function spawnStrawberry() {
@@ -56,31 +56,34 @@ function spawnStrawberry() {
 function update() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // キャラの描画
+  // キャラ描画
   let charImg = currentFace === "happy" ? charHappy : charNormal;
-  ctx.drawImage(charImg, basket.x, basket.y, basket.width, basket.height);
+  ctx.drawImage(charImg, player.x, player.y, player.width, player.height);
 
-  // カゴの描画（キャラの足元）
-  ctx.drawImage(basketImg, basket.x - 5, basket.y + basket.height - 10, basket.width + 10, 20);
+  // カゴ描画（頭の上）
+  let basketWidth = player.width + 20;
+  let basketHeight = 20;
+  let basketX = player.x - 10;
+  let basketY = player.y - basketHeight + 5; // 頭の上に配置
+  ctx.drawImage(basketImg, basketX, basketY, basketWidth, basketHeight);
 
   // イチゴ描画と移動
   strawberries.forEach((s, i) => {
     ctx.drawImage(strawberryImg, s.x, s.y, s.size, s.size);
     s.y += s.speed;
 
-    // キャッチ判定（カゴ位置で判定）
-    let basketTop = basket.y + basket.height - 10;
+    // キャッチ判定（カゴ位置）
     if (
-      s.y + s.size >= basketTop &&
-      s.x + s.size > basket.x &&
-      s.x < basket.x + basket.width
+      s.y + s.size >= basketY &&
+      s.y <= basketY + basketHeight &&
+      s.x + s.size > basketX &&
+      s.x < basketX + basketWidth
     ) {
       strawberries.splice(i, 1);
       score++;
       document.getElementById("score").textContent = score;
-
       currentFace = "happy";
-      faceTimer = 30; // 約0.5秒
+      faceTimer = 30;
     }
 
     // 画面外に出たら削除
@@ -97,12 +100,6 @@ function update() {
 
   requestAnimationFrame(update);
 }
-
-setInterval(spawnStrawberry, 1000);
-update();
-</script>
-</body>
-</html>
 
 setInterval(spawnStrawberry, 1000);
 update();
