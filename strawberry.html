@@ -1,146 +1,129 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<title>いちごキャッチゲーム</title>
-<style>
-  body { background: #fdf3f6; text-align: center; font-family: sans-serif; }
-  canvas { background: #a3d977; border-radius: 10px; }
-</style>
-</head>
-<body>
-<h1>🍓いちごキャッチ🍓</h1>
-<p>スコア: <span id="score">0</span>　残り時間: <span id="time">30</span>秒</p>
-<canvas id="gameCanvas" width="400" height="500"></canvas>
-<p id="message" style="font-size:24px; color:red;"></p>
-
+<canvas id="gameCanvas" width="800" height="600"></canvas>
 <script>
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-let score = 0;
-let timeLeft = 30;
-let gameOver = false;
-
-let player = { x: 180, y: 400, width: 60, height: 100, speed: 8 };
-let items = []; // イチゴと爆弾をまとめて管理
-let currentFace = "normal";
-let faceTimer = 0;
-
-// キャラ画像
-const charNormal = new Image();
-charNormal.src = "rofiakun (1).png";
-const charHappy = new Image();
-charHappy.src = "rofiakun (2).png";
-
-// イチゴ画像
-const strawberryImg = new Image();
-strawberryImg.src = "strawberry.png";
-
-// カゴ画像
+// 画像読み込み
 const basketImg = new Image();
 basketImg.src = "basket.png";
 
-// 爆弾画像
-const bombImg = new Image();
-bombImg.src = "bomb.png";
+const playerNormalImg = new Image();
+playerNormalImg.src = "rofiakun (1).png";
 
-document.addEventListener("keydown", e => {
-  if (gameOver) return;
-  if (e.key === "ArrowLeft") player.x -= player.speed;
-  if (e.key === "ArrowRight") player.x += player.speed;
-  if (player.x < 0) player.x = 0;
-  if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
-});
+const playerHappyImg = new Image();
+playerHappyImg.src = "rofiakun (2).png";
 
-function spawnItem() {
-  // 爆弾の出現確率 20%
-  let type = Math.random() < 0.2 ? "bomb" : "strawberry";
-  items.push({
-    type: type,
-    x: Math.random() * (canvas.width - 30),
-    y: 0,
-    size: 30,
-    speed: 1.5 + Math.random() * 1
-  });
+const strawberryImg = new Image();
+strawberryImg.src = "strawberry.png";
+
+// ゲームオブジェクト
+let player = { x: 350, y: 500, width: 80, height: 80, speed: 7 };
+let basket = { x: 360, y: 550, width: 80, height: 50 };
+let strawberries = [];
+let bombs = [];
+let score = 0;
+let playerImg = playerNormalImg;
+
+// キー入力
+let keys = {};
+document.addEventListener("keydown", (e) => { keys[e.key] = true; });
+document.addEventListener("keyup", (e) => { keys[e.key] = false; });
+
+// イチゴ生成
+function spawnStrawberry() {
+    strawberries.push({
+        x: Math.random() * (canvas.width - 30),
+        y: -30,
+        width: 30,
+        height: 30,
+        speed: 3
+    });
+}
+setInterval(spawnStrawberry, 1000);
+
+// 爆弾生成（頻度低め）
+function spawnBomb() {
+    bombs.push({
+        x: Math.random() * (canvas.width - 30),
+        y: -30,
+        width: 30,
+        height: 30,
+        speed: 4
+    });
+}
+setInterval(spawnBomb, 2500);
+
+// 衝突判定
+function isColliding(a, b) {
+    return (
+        a.x < b.x + b.width &&
+        a.x + a.width > b.x &&
+        a.y < b.y + b.height &&
+        a.y + a.height > b.y
+    );
 }
 
+// ゲーム更新
 function update() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // キャラ描画
-  let charImg = currentFace === "happy" ? charHappy : charNormal;
-  ctx.drawImage(charImg, player.x, player.y, player.width, player.height);
-
-  // カゴ描画（頭の上）
-  let basketWidth = player.width + 20;
-  let basketHeight = 20;
-  let basketX = player.x - 10;
-  let basketY = player.y - basketHeight + 5;
-  ctx.drawImage(basketImg, basketX, basketY, basketWidth, basketHeight);
-
-  // アイテム描画と移動
-  items.forEach((s, i) => {
-    if (s.type === "strawberry") {
-      ctx.drawImage(strawberryImg, s.x, s.y, s.size, s.size);
-    } else if (s.type === "bomb") {
-      ctx.drawImage(bombImg, s.x, s.y, s.size, s.size);
+    if (keys["ArrowLeft"] && player.x > 0) {
+        player.x -= player.speed;
+        basket.x -= player.speed;
+    }
+    if (keys["ArrowRight"] && player.x < canvas.width - player.width) {
+        player.x += player.speed;
+        basket.x += player.speed;
     }
 
-    s.y += s.speed;
+    strawberries.forEach((strawberry, i) => {
+        strawberry.y += strawberry.speed;
+        if (isColliding(basket, strawberry)) {
+            strawberries.splice(i, 1);
+            score++;
+            playerImg = playerHappyImg;
+            setTimeout(() => { playerImg = playerNormalImg; }, 300);
+        }
+    });
 
-    // キャッチ判定
-    if (
-      s.y + s.size >= basketY &&
-      s.y <= basketY + basketHeight &&
-      s.x + s.size > basketX &&
-      s.x < basketX + basketWidth
-    ) {
-      if (s.type === "strawberry") {
-        score++;
-        document.getElementById("score").textContent = score;
-        currentFace = "happy";
-        faceTimer = 30;
-      } else if (s.type === "bomb") {
-        gameOver = true;
-        document.getElementById("message").textContent = "💥 ゲームオーバー！";
-      }
-      items.splice(i, 1);
-    }
+    bombs.forEach((bomb, i) => {
+        bomb.y += bomb.speed;
+        if (isColliding(basket, bomb)) {
+            bombs.splice(i, 1);
+            score -= 2;
+        }
+    });
 
-    // 画面外に出たら削除
-    if (s.y > canvas.height) {
-      items.splice(i, 1);
-    }
-  });
-
-  // 顔戻し
-  if (faceTimer > 0) {
-    faceTimer--;
-    if (faceTimer === 0) currentFace = "normal";
-  }
-
-  requestAnimationFrame(update);
+    strawberries = strawberries.filter(s => s.y < canvas.height);
+    bombs = bombs.filter(b => b.y < canvas.height);
 }
 
-// タイマー
-let timer = setInterval(() => {
-  if (!gameOver) {
-    timeLeft--;
-    document.getElementById("time").textContent = timeLeft;
-    if (timeLeft <= 0) {
-      gameOver = true;
-      document.getElementById("message").textContent = "⏳ タイムアップ！";
-    }
-  }
-}, 1000);
+// 描画
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-// アイテム出現
-setInterval(() => {
-  if (!gameOver) spawnItem();
-}, 1000);
+    ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
+    ctx.drawImage(basketImg, basket.x, basket.y, basket.width, basket.height);
 
-update();
+    strawberries.forEach(strawberry => {
+        ctx.drawImage(strawberryImg, strawberry.x, strawberry.y, strawberry.width, strawberry.height);
+    });
+
+    bombs.forEach(bomb => {
+        ctx.beginPath();
+        ctx.arc(bomb.x + bomb.width / 2, bomb.y + bomb.height / 2, bomb.width / 2, 0, Math.PI * 2);
+        ctx.fillStyle = "black";
+        ctx.fill();
+        ctx.closePath();
+    });
+
+    ctx.fillStyle = "black";
+    ctx.font = "20px Arial";
+    ctx.fillText("Score: " + score, 10, 20);
+}
+
+function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
+gameLoop();
 </script>
-</body>
-</html>
