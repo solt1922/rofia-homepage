@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>いちご狩りゲーム</title>
+<style>
+  body { text-align: center; font-family: sans-serif; background: #fdf3f6; }
+  #gameArea { position: relative; width: 600px; height: 400px; margin: auto; background: #a3d977; overflow: hidden; border-radius: 15px; }
+  .strawberry {
+    position: absolute;
+    width: 50px;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .strawberry:active { transform: scale(0.9); }
+</style>
+</head>
+<body>
+<h1>🍓 いちご狩り 🍓</h1>
+<p>スコア: <span id="score">0</span> / 残り時間: <span id="time">30</span>秒</p>
+<div id="gameArea"></div>
+
+<script>
+let score = 0;
+let time = 30;
+let gameArea = document.getElementById('gameArea');
+
+function spawnStrawberry() {
+  let img = document.createElement('img');
+  img.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/PerfectStrawberry.jpg/240px-PerfectStrawberry.jpg';
+  img.className = 'strawberry';
+  img.style.left = Math.random() * 550 + 'px';
+  img.style.top = Math.random() * 350 + 'px';
+  
+  img.onclick = () => {
+    score++;
+    document.getElementById('score').textContent = score;
+    img.remove();
+  };
+
+  gameArea.appendChild(img);
+  setTimeout(() => img.remove(), 1500); // 1.5秒で消える
+}
+
+let gameInterval = setInterval(spawnStrawberry, 800);
+let timer = setInterval(() => {
+  time--;
+  document.getElementById('time').textContent = time;
+  if (time <= 0) {
+    clearInterval(gameInterval);
+    clearInterval(timer);
+    alert("終了！スコア: " + score);
+  }
+}, 1000);
+</script>
+</body>
+</html>
