@@ -1,138 +1,124 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ロフィアくんキャッチゲーム</title>
-  <style>
-    body {
-      background: #f0f8ff;
-      text-align: center;
-      font-family: sans-serif;
-      margin: 0;
-    }
-    canvas {
-      border: 2px solid #333;
-      background: #fff;
-      display: block;
-      margin: 0 auto;
-    }
-    .controls {
-      margin-top: 10px;
-    }
-    button {
-      font-size: 24px;
-      padding: 10px 20px;
-      margin: 5px;
-      border-radius: 10px;
-    }
-  </style>
-</head>
-<body>
-  <h1>🍓ロフィアくんキャッチゲーム🍓</h1>
-  <canvas id="gameCanvas" width="500" height="700"></canvas>
+import pygame
+import random
+import sys
 
-  <div class="controls">
-    <button onclick="moveLeft()">⬅️</button>
-    <button onclick="moveRight()">➡️</button>
-  </div>
+# 初期化
+pygame.init()
 
-  <script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
+# 画面サイズ
+WIDTH, HEIGHT = 800, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("ロフィアくんのキャッチゲーム")
 
-    // キャラクター画像
-    const rofiakun = new Image();
-    rofiakun.src = "rofiakun (1).png";  // 同じフォルダに配置
+# 色
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+GRAY = (200, 200, 200)
 
-    // アイテム画像
-    const strawberry = new Image();
-    strawberry.src = "strawberry.png";
+# フォント
+font = pygame.font.Font(None, 36)
 
-    // キャラの設定
-    let char = {
-      x: canvas.width / 2 - 50,
-      y: canvas.height - 120,
-      width: 120,  // 横幅指定
-      aspect: 0.517, // 縦横比（縦/横）
-      speed: 20
-    };
+# 画像読み込み
+basket_img = pygame.image.load("basket.png")
+strawberry_img = pygame.image.load("strawberry.png")
+rofiakun_img = pygame.image.load("rofiakun (1).png")
 
-    // アイテムの配列
-    let items = [];
-    let score = 0;
+# キャラクターのアスペクト比固定（0.517:1）
+CHARACTER_WIDTH = 120
+CHARACTER_HEIGHT = int(CHARACTER_WIDTH / 0.517)
+rofiakun_img = pygame.transform.scale(rofiakun_img, (CHARACTER_WIDTH, CHARACTER_HEIGHT))
 
-    function spawnItem() {
-      items.push({
-        x: Math.random() * (canvas.width - 40),
-        y: -40,
-        size: 40,
-        speed: 3
-      });
-    }
+# キャラの設定
+character_x = WIDTH // 2 - CHARACTER_WIDTH // 2
+character_y = HEIGHT - CHARACTER_HEIGHT - 50
+character_speed = 7
 
-    function update() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+# かご設定
+basket_width, basket_height = 100, 60
+basket_img = pygame.transform.scale(basket_img, (basket_width, basket_height))
 
-      // キャラクターの描画（アスペクト比固定）
-      const charHeight = char.width * char.aspect;
-      ctx.drawImage(rofiakun, char.x, char.y, char.width, charHeight);
+# いちご設定
+strawberry_width, strawberry_height = 50, 50
+strawberry_img = pygame.transform.scale(strawberry_img, (strawberry_width, strawberry_height))
+fall_speed = 5
 
-      // アイテム処理
-      for (let i = 0; i < items.length; i++) {
-        let item = items[i];
-        item.y += item.speed;
-        ctx.drawImage(strawberry, item.x, item.y, item.size, item.size);
+strawberries = []
+score = 0
 
-        // キャッチ判定
-        if (
-          item.x < char.x + char.width &&
-          item.x + item.size > char.x &&
-          item.y < char.y + charHeight &&
-          item.y + item.size > char.y
-        ) {
-          items.splice(i, 1);
-          score++;
-          i--;
-        }
-      }
+# ボタンエリア
+button_height = 80
+button_left = pygame.Rect(50, HEIGHT - button_height, 150, button_height)
+button_right = pygame.Rect(WIDTH - 200, HEIGHT - button_height, 150, button_height)
 
-      // スコア表示
-      ctx.fillStyle = "black";
-      ctx.font = "24px sans-serif";
-      ctx.fillText("Score: " + score, 20, 40);
-    }
+# いちご生成
+def create_strawberry():
+    x = random.randint(0, WIDTH - strawberry_width)
+    y = -strawberry_height
+    strawberries.append(pygame.Rect(x, y, strawberry_width, strawberry_height))
 
-    // 操作
-    function moveLeft() {
-      char.x -= char.speed;
-      if (char.x < 0) char.x = 0;
-    }
+# ゲームループ
+clock = pygame.time.Clock()
+spawn_event = pygame.USEREVENT + 1
+pygame.time.set_timer(spawn_event, 1500)
 
-    function moveRight() {
-      char.x += char.speed;
-      if (char.x + char.width > canvas.width)
-        char.x = canvas.width - char.width;
-    }
+running = True
+while running:
+    screen.fill(WHITE)
 
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft") moveLeft();
-      if (e.key === "ArrowRight") moveRight();
-    });
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == spawn_event:
+            create_strawberry()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if button_left.collidepoint(event.pos):
+                character_x -= character_speed * 5  # 長押し代わりに強め移動
+            elif button_right.collidepoint(event.pos):
+                character_x += character_speed * 5
 
-    // ゲームループ
-    setInterval(() => {
-      update();
-    }, 30);
+    # キーボード操作
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        character_x -= character_speed
+    if keys[pygame.K_RIGHT]:
+        character_x += character_speed
 
-    // アイテム生成
-    setInterval(spawnItem, 1500);
-  </script>
-</body>
-</html>
+    # 画面内制限
+    character_x = max(0, min(WIDTH - CHARACTER_WIDTH, character_x))
 
-    // アイテム生成
-    setInterval(spawnItem, 1500);
-  </script>
-</body>
-</html>
+    # キャラとカゴ描画
+    screen.blit(rofiakun_img, (character_x, character_y))
+    screen.blit(basket_img, (character_x + CHARACTER_WIDTH // 2 - basket_width // 2,
+                             character_y + CHARACTER_HEIGHT - 20))
+
+    basket_rect = pygame.Rect(character_x + CHARACTER_WIDTH // 2 - basket_width // 2,
+                              character_y + CHARACTER_HEIGHT - 20,
+                              basket_width, basket_height)
+
+    # いちご更新
+    for strawberry in strawberries[:]:
+        strawberry.y += fall_speed
+        screen.blit(strawberry_img, strawberry.topleft)
+        if strawberry.colliderect(basket_rect):
+            strawberries.remove(strawberry)
+            score += 1
+        elif strawberry.y > HEIGHT:
+            strawberries.remove(strawberry)
+
+    # スコア表示
+    score_text = font.render(f"Score: {score}", True, BLACK)
+    screen.blit(score_text, (10, 10))
+
+    # ボタン描画
+    pygame.draw.rect(screen, GRAY, button_left)
+    pygame.draw.rect(screen, GRAY, button_right)
+    left_text = font.render("←", True, BLACK)
+    right_text = font.render("→", True, BLACK)
+    screen.blit(left_text, (button_left.centerx - 10, button_left.centery - 15))
+    screen.blit(right_text, (button_right.centerx - 10, button_right.centery - 15))
+
+    pygame.display.flip()
+    clock.tick(60)
+
+pygame.quit()
+sys.exit()
