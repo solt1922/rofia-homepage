@@ -15,6 +15,7 @@
     margin: 0 auto;
     background-color: #a3d977;
     border: 3px solid #333;
+    touch-action: none; /* スマホでのスクロール防止 */
   }
 </style>
 </head>
@@ -60,6 +61,32 @@ let keys = {};
 document.addEventListener('keydown', (e) => keys[e.key] = true);
 document.addEventListener('keyup', (e) => keys[e.key] = false);
 
+// タップ入力（スマホ対応）
+canvas.addEventListener('touchstart', (e) => {
+    const touch = e.touches[0];
+    if (touch.clientX < canvas.width / 2) {
+        player.x -= player.speed * 3; // 左に少し移動
+    } else {
+        player.x += player.speed * 3; // 右に少し移動
+    }
+});
+
+// スワイプ検出用
+let touchStartX = null;
+canvas.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+});
+canvas.addEventListener('touchend', (e) => {
+    if (touchStartX === null) return;
+    let dx = e.changedTouches[0].clientX - touchStartX;
+    if (dx > 30) { // 右スワイプ
+        player.x += player.speed * 5;
+    } else if (dx < -30) { // 左スワイプ
+        player.x -= player.speed * 5;
+    }
+    touchStartX = null;
+});
+
 function spawnStrawberry() {
     const size = 50;
     strawberries.push({
@@ -72,7 +99,7 @@ function spawnStrawberry() {
 }
 
 function update() {
-    // プレイヤー移動
+    // プレイヤー移動（キー）
     if (keys['ArrowLeft']) player.x -= player.speed;
     if (keys['ArrowRight']) player.x += player.speed;
 
@@ -113,7 +140,7 @@ function update() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // プレイヤー（比率固定）
+    // プレイヤー
     ctx.drawImage(player.image, player.x, player.y, player.width, player.height);
 
     // バスケット（頭の上）
