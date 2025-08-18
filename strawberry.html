@@ -1,124 +1,196 @@
-import pygame
-import random
-import sys
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>いちご狩りゲーム</title>
+<style>
+  body {
+    margin: 0;
+    background-color: #cceeff;
+    overflow: hidden;
+    font-family: sans-serif;
+    touch-action: none; /* スマホでの操作をスムーズに */
+  }
+  canvas {
+    display: block;
+    margin: 0 auto;
+    background-color: #a3d977;
+    border: 3px solid #333;
+  }
+  /* 操作ボタン */
+  #controls {
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+  }
+  .btn {
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+    margin: 10px;
+    border-radius: 50%;
+    background-color: #ffcc66;
+    font-size: 32px;
+    font-weight: bold;
+    line-height: 80px;
+    text-align: center;
+    user-select: none;
+    border: 3px solid #333;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+  }
+  .btn:active {
+    background-color: #ffaa33;
+  }
+</style>
+</head>
+<body>
+<canvas id="gameCanvas" width="500" height="600"></canvas>
 
-# 初期化
-pygame.init()
+<!-- 操作ボタン -->
+<div id="controls">
+  <div id="leftBtn" class="btn">◀</div>
+  <div id="rightBtn" class="btn">▶</div>
+</div>
 
-# 画面サイズ
-WIDTH, HEIGHT = 800, 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("ロフィアくんのキャッチゲーム")
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
 
-# 色
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-GRAY = (200, 200, 200)
+// 画像読み込み
+const playerImgNormal = new Image();
+playerImgNormal.src = 'rofiakun (1).png';
+const playerImgHappy = new Image();
+playerImgHappy.src = 'rofiakun (2).png';
+const basketImg = new Image();
+basketImg.src = 'basket.png';
+const strawberryImg = new Image();
+strawberryImg.src = 'strawberry.png';
 
-# フォント
-font = pygame.font.Font(None, 36)
+// プレイヤー設定（アスペクト比固定）
+const aspectRatio = 0.517; // 幅 ÷ 高さ
+let playerHeight = 160; // 高さだけ決める
+let playerWidth = playerHeight * aspectRatio;
 
-# 画像読み込み
-basket_img = pygame.image.load("basket.png")
-strawberry_img = pygame.image.load("strawberry.png")
-rofiakun_img = pygame.image.load("rofiakun (1).png")
+let player = {
+    x: canvas.width / 2 - playerWidth / 2,
+    y: canvas.height - playerHeight - 20,
+    width: playerWidth,
+    height: playerHeight,
+    speed: 6,
+    image: playerImgNormal,
+    basketOffsetY: 20
+};
 
-# キャラクターのアスペクト比固定（0.517:1）
-CHARACTER_WIDTH = 120
-CHARACTER_HEIGHT = int(CHARACTER_WIDTH / 0.517)
-rofiakun_img = pygame.transform.scale(rofiakun_img, (CHARACTER_WIDTH, CHARACTER_HEIGHT))
+// イチゴリスト
+let strawberries = [];
+let score = 0;
+let isHappy = false;
+let happyTimer = 0;
 
-# キャラの設定
-character_x = WIDTH // 2 - CHARACTER_WIDTH // 2
-character_y = HEIGHT - CHARACTER_HEIGHT - 50
-character_speed = 7
+// 入力管理
+let keys = {};
+let leftPressed = false;
+let rightPressed = false;
 
-# かご設定
-basket_width, basket_height = 100, 60
-basket_img = pygame.transform.scale(basket_img, (basket_width, basket_height))
+// キーボード入力
+document.addEventListener('keydown', (e) => keys[e.key] = true);
+document.addEventListener('keyup', (e) => keys[e.key] = false);
 
-# いちご設定
-strawberry_width, strawberry_height = 50, 50
-strawberry_img = pygame.transform.scale(strawberry_img, (strawberry_width, strawberry_height))
-fall_speed = 5
+// タッチボタン入力
+document.getElementById('leftBtn').addEventListener('touchstart', () => leftPressed = true);
+document.getElementById('leftBtn').addEventListener('touchend', () => leftPressed = false);
+document.getElementById('rightBtn').addEventListener('touchstart', () => rightPressed = true);
+document.getElementById('rightBtn').addEventListener('touchend', () => rightPressed = false);
 
-strawberries = []
-score = 0
+function spawnStrawberry() {
+    const size = 50;
+    strawberries.push({
+        x: Math.random() * (canvas.width - size),
+        y: -size,
+        width: size,
+        height: size,
+        speed: 2.5
+    });
+}
 
-# ボタンエリア
-button_height = 80
-button_left = pygame.Rect(50, HEIGHT - button_height, 150, button_height)
-button_right = pygame.Rect(WIDTH - 200, HEIGHT - button_height, 150, button_height)
+function update() {
+    // プレイヤー移動（キーボード）
+    if (keys['ArrowLeft']) player.x -= player.speed;
+    if (keys['ArrowRight']) player.x += player.speed;
 
-# いちご生成
-def create_strawberry():
-    x = random.randint(0, WIDTH - strawberry_width)
-    y = -strawberry_height
-    strawberries.append(pygame.Rect(x, y, strawberry_width, strawberry_height))
+    // プレイヤー移動（タッチ）
+    if (leftPressed) player.x -= player.speed;
+    if (rightPressed) player.x += player.speed;
 
-# ゲームループ
-clock = pygame.time.Clock()
-spawn_event = pygame.USEREVENT + 1
-pygame.time.set_timer(spawn_event, 1500)
+    // 画面端制限
+    if (player.x < 0) player.x = 0;
+    if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
 
-running = True
-while running:
-    screen.fill(WHITE)
+    // イチゴ移動
+    strawberries.forEach(s => s.y += s.speed);
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == spawn_event:
-            create_strawberry()
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if button_left.collidepoint(event.pos):
-                character_x -= character_speed * 5  # 長押し代わりに強め移動
-            elif button_right.collidepoint(event.pos):
-                character_x += character_speed * 5
+    // 衝突判定
+    strawberries.forEach((s, index) => {
+        if (s.x < player.x + player.width &&
+            s.x + s.width > player.x &&
+            s.y < player.y + player.height &&
+            s.y + s.height > player.y) {
+            strawberries.splice(index, 1);
+            score++;
+            player.image = playerImgHappy;
+            isHappy = true;
+            happyTimer = 20; // 表情が変わる時間
+        }
+    });
 
-    # キーボード操作
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
-        character_x -= character_speed
-    if keys[pygame.K_RIGHT]:
-        character_x += character_speed
+    // 表情タイマー
+    if (isHappy) {
+        happyTimer--;
+        if (happyTimer <= 0) {
+            isHappy = false;
+            player.image = playerImgNormal;
+        }
+    }
 
-    # 画面内制限
-    character_x = max(0, min(WIDTH - CHARACTER_WIDTH, character_x))
+    // 画面外のイチゴ削除
+    strawberries = strawberries.filter(s => s.y < canvas.height + s.height);
+}
 
-    # キャラとカゴ描画
-    screen.blit(rofiakun_img, (character_x, character_y))
-    screen.blit(basket_img, (character_x + CHARACTER_WIDTH // 2 - basket_width // 2,
-                             character_y + CHARACTER_HEIGHT - 20))
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    basket_rect = pygame.Rect(character_x + CHARACTER_WIDTH // 2 - basket_width // 2,
-                              character_y + CHARACTER_HEIGHT - 20,
-                              basket_width, basket_height)
+    // プレイヤー（比率固定）
+    ctx.drawImage(player.image, player.x, player.y, player.width, player.height);
 
-    # いちご更新
-    for strawberry in strawberries[:]:
-        strawberry.y += fall_speed
-        screen.blit(strawberry_img, strawberry.topleft)
-        if strawberry.colliderect(basket_rect):
-            strawberries.remove(strawberry)
-            score += 1
-        elif strawberry.y > HEIGHT:
-            strawberries.remove(strawberry)
+    // バスケット（頭の上）
+    ctx.drawImage(
+        basketImg,
+        player.x + (player.width - 80) / 2,
+        player.y - player.basketOffsetY,
+        80,
+        50
+    );
 
-    # スコア表示
-    score_text = font.render(f"Score: {score}", True, BLACK)
-    screen.blit(score_text, (10, 10))
+    // イチゴ
+    strawberries.forEach(s => {
+        ctx.drawImage(strawberryImg, s.x, s.y, s.width, s.height);
+    });
 
-    # ボタン描画
-    pygame.draw.rect(screen, GRAY, button_left)
-    pygame.draw.rect(screen, GRAY, button_right)
-    left_text = font.render("←", True, BLACK)
-    right_text = font.render("→", True, BLACK)
-    screen.blit(left_text, (button_left.centerx - 10, button_left.centery - 15))
-    screen.blit(right_text, (button_right.centerx - 10, button_right.centery - 15))
+    // スコア
+    ctx.fillStyle = '#000';
+    ctx.font = '24px sans-serif';
+    ctx.fillText('スコア: ' + score, 10, 30);
+}
 
-    pygame.display.flip()
-    clock.tick(60)
+function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
 
-pygame.quit()
-sys.exit()
+setInterval(spawnStrawberry, 800); // イチゴの出現頻度
+gameLoop();
+</script>
+</body>
+</html>
